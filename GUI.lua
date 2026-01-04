@@ -279,17 +279,15 @@ function addon:CreateGUI()
     -- ROUTE DISPLAY CONTAINER (initially hidden)
     -----------------------------------------------------------
 
-    local routeContainer = CreateFrame("ScrollFrame", nil, frame, "UIPanelScrollFrameTemplate")
+    local routeContainer = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     routeContainer:SetPoint("TOPLEFT", selectorToggleBtn, "BOTTOMLEFT", 0, -10)
-    routeContainer:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -30, 10)
+    routeContainer:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -10, 10)
     routeContainer:Hide()
+    routeContainer:SetClipsChildren(true) -- Clip overflow if route is too long
     frame.routeContainer = routeContainer
 
-    -- ScrollChild (where route steps will live)
-    local scrollChild = CreateFrame("Frame", nil, routeContainer)
-    scrollChild:SetSize(FRAME_WIDTH - 40, 1) -- Height grows dynamically
-    routeContainer:SetScrollChild(scrollChild)
-    frame.routeScrollChild = scrollChild
+    -- No scroll child needed - route steps go directly in routeContainer
+    frame.routeScrollChild = routeContainer -- Keep same reference for compatibility
 
     -----------------------------------------------------------
     -- STORAGE & STATE
@@ -496,6 +494,7 @@ end
 
 function addon:OnNavigateClicked()
     local dest = addon.MapzerothFrame.selectedDest
+    local frame = addon.MapzerothFrame
 
     if not dest then
         print("[Mapzeroth] Please select a destination")
@@ -507,15 +506,19 @@ function addon:OnNavigateClicked()
         addon.MapzerothFrame.destinationSelector:Hide()
     end
 
+    -- Collapse main frame
+    frame:SetHeight(FRAME_HEIGHT_COLLAPSED)
+    frame.isExpanded = false
+
     if dest == "_WAYPOINT" then
-        self:RouteToWaypoint()
+        self:FindRoute("_WAYPOINT_DESTINATION")
     else
         self:FindRoute(dest)
     end
 end
 
 -----------------------------------------------------------
--- DISPLAY ROUTE IN GUI
+-- DISPLAY ROUTE IN GUI (WITH CLICKABLE SUPPORT)
 -----------------------------------------------------------
 
 function addon:DisplayRouteInGUI(path, totalCost, previous, atNode, initialTime, initialMethod, startNodeName,
@@ -569,11 +572,14 @@ function addon:DisplayRouteInGUI(path, totalCost, previous, atNode, initialTime,
         -- Normal walking start
         if not atNode then
             local methodText = initialMethod == "fly" and "fly" or "walk"
+            local startNode = self:FindNearestNode() -- Get actual start node
+
             table.insert(steps, {
                 num = stepNum,
                 method = methodText,
                 destination = startNodeName,
-                time = initialTime
+                time = initialTime,
+                nodeID = startNode and startNode.id or nil -- Store node ID for waypoint
             })
             stepNum = stepNum + 1
         end
@@ -599,7 +605,8 @@ function addon:DisplayRouteInGUI(path, totalCost, previous, atNode, initialTime,
                     abilityName = prevInfo.abilityName,
                     destinationName = prevInfo.destinationName,
                     itemID = prevInfo.itemID,
-                    spellID = prevInfo.spellID
+                    spellID = prevInfo.spellID,
+                    nodeID = nodeID -- Even synthetic nodes get stored
                 })
                 stepNum = stepNum + 1
             elseif node then
@@ -610,7 +617,8 @@ function addon:DisplayRouteInGUI(path, totalCost, previous, atNode, initialTime,
                     time = prevInfo.cost,
                     abilityName = prevInfo.abilityName,
                     itemID = prevInfo.itemID,
-                    spellID = prevInfo.spellID
+                    spellID = prevInfo.spellID,
+                    nodeID = nodeID -- Store node ID for walk/fly steps
                 })
                 stepNum = stepNum + 1
             end
@@ -666,8 +674,8 @@ function addon:DisplayRouteInGUI(path, totalCost, previous, atNode, initialTime,
     -- Add footer height to total offset
     yOffset = yOffset + 35
 
-    -- Resize scroll child to fit all content including footer
-    scrollChild:SetHeight(math.max(yOffset, 100))
+    -- Let container grow to fit content (will be clipped if too tall)
+    -- No need to set height - container is anchored to frame edges
 
     -- Expand frame
     frame:SetHeight(FRAME_HEIGHT_COLLAPSED + math.min(yOffset + 40, 300))
@@ -676,11 +684,69 @@ function addon:DisplayRouteInGUI(path, totalCost, previous, atNode, initialTime,
 end
 
 -----------------------------------------------------------
--- CREATE ROUTE STEP FRAME (Material Style)
+-- BUILD MACRO TEXT FOR SECURE STEP EXECUTION
+-----------------------------------------------------------
+
+function addon:BuildStepMacro(stepData)
+    if stepData.spellID then
+        -- Spell - cast by ID
+        return string.format("/cast %d", stepData.spellID)
+
+    elseif stepData.itemID then
+        local itemType = stepData.itemType
+
+        if itemType == "toy" then
+            -- Toys use the toy collection system
+            return string.format("/use %d", stepData.itemID)
+
+        elseif itemType == "equipment_item" then
+            -- Equipment items might need equipping first
+            -- Use item by ID - WoW will equip if needed, use if equipped
+            return string.format("/use %d", stepData.itemID)
+
+        else
+            -- Regular inventory items (inventory_item, hearthstone, etc)
+            return string.format("/use %d", stepData.itemID)
+        end
+    end
+
+    -- No macro needed (walk/fly handled by OnClick)
+    return nil
+end
+
+-----------------------------------------------------------
+-- CREATE ROUTE STEP FRAME (CLICKABLE VERSION)
 -----------------------------------------------------------
 
 function addon:CreateRouteStepFrame(parent, stepData)
-    local frame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
+    -- Determine if this needs to be a SecureActionButton
+    local needsSecure = (stepData.itemID or stepData.spellID) ~= nil
+
+    local frame
+    if needsSecure then
+        -- SecureActionButton for items/spells
+        frame = CreateFrame("Button", nil, parent, "SecureActionButtonTemplate,BackdropTemplate")
+        frame:SetAttribute("type", "macro")
+        frame:RegisterForClicks("LeftButtonUp")
+
+        -- Build and set macro text
+        local macroText = addon:BuildStepMacro(stepData)
+        if macroText then
+            frame:SetAttribute("macrotext", macroText)
+        end
+    else
+        -- Regular button for walk/fly
+        frame = CreateFrame("Button", nil, parent, "BackdropTemplate")
+
+        -- Click handler for waypoints
+        frame:SetScript("OnClick", function(self)
+            local node = self.stepData.nodeID and addon.TravelGraph:GetNodeByID(self.stepData.nodeID)
+            if node then
+                addon.ActionHandlers:SetWaypoint(node.map_id, node.x, node.y, node.name, self.stepData.method)
+            end
+        end)
+    end
+
     frame:SetSize(FRAME_WIDTH - 50, STEP_HEIGHT - 5)
 
     -- Material backdrop (flat dark card)
@@ -689,6 +755,105 @@ function addon:CreateRouteStepFrame(parent, stepData)
         tile = false
     })
     frame:SetBackdropColor(unpack(COLOURS.cardBg))
+
+    -- Store stepData for tooltips
+    frame.stepData = stepData
+
+    -- Make it feel clickable
+    frame:EnableMouse(true)
+    frame:SetHighlightTexture("Interface\\Buttons\\WHITE8x8")
+    local highlight = frame:GetHighlightTexture()
+    highlight:SetVertexColor(unpack(COLOURS.hoverBg))
+    highlight:SetAllPoints(frame)
+
+    -- Tooltip with instructions
+    frame:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+
+        -- Use itemType if available (cleaner than checking INVTYPE strings)
+        if stepData.itemType then
+            if stepData.itemType == "equipment_item" then
+                -- Equipment - check if currently equipped
+                local isEquipped = stepData.itemID and C_Item.IsEquippedItem(stepData.itemID)
+
+                if isEquipped then
+                    GameTooltip:SetText(string.format("Click to use %s", stepData.abilityName or "item"), 1, 1, 1)
+                    GameTooltip:AddLine("|cffff6600Remember to re-equip your normal gear!|r", 1, 0.6, 0, true)
+                else
+                    GameTooltip:SetText(string.format("Click to equip %s", stepData.abilityName or "item"), 1, 1, 1)
+                    GameTooltip:AddLine("Click again to use it", 0.7, 0.7, 0.7, true)
+                end
+            elseif stepData.itemType == "toy" or stepData.itemType == "inventory_item" or stepData.itemType ==
+                "hearthstone" then
+                -- Regular usable item
+                GameTooltip:SetText(string.format("Click to use %s", stepData.abilityName or "item"), 1, 1, 1)
+            else
+                -- Unknown item type
+                GameTooltip:SetText(string.format("Click to use %s", stepData.abilityName or "item"), 1, 1, 1)
+            end
+
+        elseif stepData.itemID then
+            -- Fallback: Old detection logic for backwards compatibility
+            local itemInfo = C_Item.GetItemInfo(stepData.itemID)
+            if itemInfo then
+                local _, _, _, _, _, _, _, _, itemEquipLoc = C_Item.GetItemInfo(stepData.itemID)
+
+                -- Equipment item - show dynamic tooltip (exclude NON_EQUIP sentinel)
+                if itemEquipLoc and itemEquipLoc ~= "" and itemEquipLoc ~= "INVTYPE_NON_EQUIP_IGNORE" then
+                    local isEquipped = C_Item.IsEquippedItem(stepData.itemID)
+
+                    if isEquipped then
+                        GameTooltip:SetText(string.format("Click to use %s", stepData.abilityName or "item"), 1, 1, 1)
+                        GameTooltip:AddLine("|cffff6600Remember to re-equip your normal gear!|r", 1, 0.6, 0, true)
+                    else
+                        GameTooltip:SetText(string.format("Click to equip %s", stepData.abilityName or "item"), 1, 1, 1)
+                        GameTooltip:AddLine("Click again to use it", 0.7, 0.7, 0.7, true)
+                    end
+                else
+                    -- Regular inventory item
+                    GameTooltip:SetText(string.format("Click to use %s", stepData.abilityName or "item"), 1, 1, 1)
+                end
+            else
+                GameTooltip:SetText(string.format("Click to use %s", stepData.abilityName or "item"), 1, 1, 1)
+            end
+
+        elseif stepData.spellID then
+            -- Spell/ability - check cooldown
+            local cooldownInfo = C_Spell.GetSpellCooldown(stepData.spellID)
+            if cooldownInfo and cooldownInfo.startTime > 0 and cooldownInfo.duration > 1.5 then
+                local remaining = cooldownInfo.duration - (GetTime() - cooldownInfo.startTime)
+                GameTooltip:SetText(string.format("Click to cast %s", stepData.abilityName or "spell"), 1, 1, 1)
+                GameTooltip:AddLine(string.format("|cffff6600On cooldown (%.0fs remaining)|r", remaining), 1, 0.6, 0,
+                    true)
+            else
+                GameTooltip:SetText(string.format("Click to cast %s", stepData.abilityName or "spell"), 1, 1, 1)
+            end
+
+        elseif stepData.method == "walk" or stepData.method == "fly" then
+            local waypointType = TomTom and "TomTom" or "map"
+            local methodText = stepData.method == "fly" and "Fly" or "Walk"
+            GameTooltip:SetText(string.format("%s to %s", methodText, stepData.destination or "destination"), 1, 1, 1)
+            GameTooltip:AddLine(string.format("Click to set %s waypoint", waypointType), 0.7, 0.7, 0.7, true)
+
+        else
+            GameTooltip:SetText("Click to execute this step", 1, 1, 1)
+        end
+
+        GameTooltip:Show()
+    end)
+
+    frame:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+
+    -- Cursor feedback
+    frame:SetScript("OnMouseDown", function(self)
+        self:SetBackdropColor(0.2, 0.2, 0.2, 0.8)
+    end)
+
+    frame:SetScript("OnMouseUp", function(self)
+        self:SetBackdropColor(unpack(COLOURS.cardBg))
+    end)
 
     -- Step number (left side, small)
     local numText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")

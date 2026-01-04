@@ -287,6 +287,7 @@ function addon:FindPath(startNodeID, endNodeID, playerAbilities, syntheticEdges)
                                     destinationName = edge.destinationName,
                                     isSynthetic = edge.isSynthetic,
                                     itemID = edge.itemID,
+                                    itemType = edge.itemType,
                                     spellID = edge.spellID
                                 }
                                 pq:push(neighborID, newDist)
@@ -322,93 +323,105 @@ function addon:FindPath(startNodeID, endNodeID, playerAbilities, syntheticEdges)
 end
 
 -----------------------------------------------------------
+-- UTILITY: Normalize Start of Path
+-----------------------------------------------------------
+
+function addon:NormalizePath(path, cost, previous, startNode, playerLocation)
+    if not path or #path == 0 then
+        return path, cost, previous
+    end
+    
+    local firstNodeID = path[1]
+    local firstPrev = previous[firstNodeID]
+    
+    -- Check if first step is a teleport
+    local usedTeleport = firstPrev and 
+        (firstPrev.method == "teleport" or 
+         firstPrev.method == "hearthstone" or 
+         firstPrev.method == "racial")
+    
+    -- If we teleported, path is already complete
+    if usedTeleport then
+        return path, cost, previous
+    end
+    
+    -- Calculate distance to start node
+    local dx = startNode.x - playerLocation.x
+    local dy = startNode.y - playerLocation.y
+    local distance = math.sqrt(dx * dx + dy * dy)
+    
+    -- If we're already at the node, path is complete
+    if distance < 0.01 then
+        return path, cost, previous
+    end
+    
+    -- Add initial walk/fly step
+    local initialTime, initialMethod = self:CalculateTravelToNode(distance, playerLocation.mapID)
+    
+    -- Create synthetic node for initial step
+    local INITIAL_STEP_NODE = "_INITIAL_STEP"
+    
+    -- Inject into path at position 1
+    table.insert(path, 1, INITIAL_STEP_NODE)
+    
+    -- Add to previous table
+    previous[INITIAL_STEP_NODE] = {
+        node = "_PLAYER_POSITION",
+        method = initialMethod,
+        cost = initialTime,
+        destination = startNode.name,
+        nodeID = startNode.id
+    }
+    
+    -- Update cost
+    local totalCost = cost + initialTime
+    
+    return path, totalCost, previous
+end
+
+-----------------------------------------------------------
 -- UTILITY: Format Path for Display
 -----------------------------------------------------------
 
-function addon:FormatPath(path, totalCost, previous, atNode, initialTime, initialMethod, startNodeName, usedTeleport)
+function addon:FormatPath(path, totalCost, previous)
     if not path then
         return "No path found"
     end
 
-    local fullCost = totalCost
     local output = {}
-    local stepNum = 1
+    table.insert(output, string.format("[Mapzeroth] Route found (%.0f seconds):", totalCost))
 
-    if usedTeleport then
-        local firstPrev = previous[path[1]]
-        table.insert(output, string.format("[Mapzeroth] Route found (%.0f seconds):", fullCost))
-
-        local methodText
-        if firstPrev.destinationName then
-            methodText = string.format("Use %s to %s", firstPrev.abilityName, firstPrev.destinationName)
-        else
-            methodText = firstPrev.abilityName or "Teleport to"
-        end
-
-        table.insert(output, string.format("  %d. %s (%.0fs)", stepNum, methodText, firstPrev.cost))
-        stepNum = stepNum + 1
-    else
-        if not atNode then
-            fullCost = fullCost + initialTime
-        end
-
-        table.insert(output, string.format("[Mapzeroth] Route found (%.0f seconds):", fullCost))
-
-        if not atNode then
-            local methodText = initialMethod == "fly" and "Fly to" or "Run to"
-            table.insert(output, string.format("  %d. %s %s (%.0fs)", stepNum, methodText, startNodeName, initialTime))
-            stepNum = stepNum + 1
-        end
-    end
-
-    -- Add path steps
-    for i = 1, #path do
-        local nodeID = path[i]
+    for i, nodeID in ipairs(path) do
         local node = self.TravelGraph:GetNodeByID(nodeID)
-
-        if node then
-            if i == 1 and usedTeleport then
-            elseif i == 1 and atNode then
-                table.insert(output, string.format("  %d. Start: %s", stepNum, node.name))
-                stepNum = stepNum + 1
-            elseif i > 1 then
-                local prevInfo = previous[nodeID]
-                local actionText
-                if prevInfo.abilityName then
-                    if prevInfo.destinationName then
-                        actionText = string.format("Use %s to %s", prevInfo.abilityName, prevInfo.destinationName)
-                    else
-                        actionText = string.format("Use %s", prevInfo.abilityName)
-                    end
+        local prevInfo = previous[nodeID]
+        
+        if not prevInfo then
+            -- Skip
+        elseif nodeID == "_INITIAL_STEP" then
+            local methodText = prevInfo.method == "fly" and "Fly to" or "Walk to"
+            table.insert(output, string.format("  %d. %s %s (%.0fs)", i, methodText, prevInfo.destination, prevInfo.cost))
+        elseif nodeID == "_WAYPOINT_DESTINATION" then
+            local actionText
+            if prevInfo.abilityName then
+                actionText = string.format("Use %s", prevInfo.abilityName)
+            else
+                local methodText = METHOD_DISPLAY_TEXT[prevInfo.method] or "Travel to"
+                actionText = string.format("%s waypoint", methodText)
+            end
+            table.insert(output, string.format("  %d. %s (%.0fs)", i, actionText, prevInfo.cost))
+        elseif node then
+            local actionText
+            if prevInfo.abilityName then
+                if prevInfo.destinationName then
+                    actionText = string.format("Use %s to %s", prevInfo.abilityName, prevInfo.destinationName)
                 else
-                    local methodText = METHOD_DISPLAY_TEXT[prevInfo.method] or "Travel to"
-                    actionText = string.format("%s %s", methodText, node.name)
+                    actionText = string.format("Use %s", prevInfo.abilityName)
                 end
-
-                table.insert(output, string.format("  %d. %s (%.0fs)", stepNum, actionText, prevInfo.cost))
-                stepNum = stepNum + 1
+            else
+                local methodText = METHOD_DISPLAY_TEXT[prevInfo.method] or "Travel to"
+                actionText = string.format("%s %s", methodText, node.name)
             end
-        else
-            -- Synthetic node (like _WAYPOINT_DESTINATION)
-            if nodeID == "_WAYPOINT_DESTINATION" then
-                local prevInfo = previous[nodeID]
-                if prevInfo then
-                    local actionText
-                    if prevInfo.abilityName then
-                        if prevInfo.destinationName then
-                            actionText = string.format("Use %s to waypoint", prevInfo.abilityName)
-                        else
-                            actionText = string.format("Travel to waypoint")
-                        end
-                    else
-                        local methodText = METHOD_DISPLAY_TEXT[prevInfo.method] or "Travel to"
-                        actionText = string.format("%s waypoint", methodText)
-                    end
-
-                    table.insert(output, string.format("  %d. %s (%.0fs)", stepNum, actionText, prevInfo.cost))
-                    stepNum = stepNum + 1
-                end
-            end
+            table.insert(output, string.format("  %d. %s (%.0fs)", i, actionText, prevInfo.cost))
         end
     end
 
@@ -460,7 +473,8 @@ function addon:BuildSyntheticEdges(playerLocation, playerAbilities, optionalWayp
                     fromPlayer = true,
                     cost = cost,
                     abilityName = ability.name,
-                    itemID = ability.itemID
+                    itemID = ability.itemID,
+                    itemType = ability.type
                 })
 
                 -- Multi-destination teleports
@@ -484,6 +498,7 @@ function addon:BuildSyntheticEdges(playerLocation, playerAbilities, optionalWayp
                             destinationName = destNode.name,
                             isSynthetic = true,
                             itemID = ability.itemID,
+                            itemType = ability.type,
                             spellID = ability.spellID
                         })
                     end
@@ -507,6 +522,7 @@ function addon:BuildSyntheticEdges(playerLocation, playerAbilities, optionalWayp
                         abilityName = ability.name,
                         isSynthetic = true,
                         itemID = ability.itemID,
+                        itemType = ability.type,
                         spellID = ability.spellID
                     })
                 end
@@ -527,7 +543,7 @@ function addon:BuildSyntheticEdges(playerLocation, playerAbilities, optionalWayp
                 cost = dest.cost,
                 abilityName = dest.abilityName,
                 isSynthetic = true,
-                itemID = dest.itemID
+                itemType = dest.type
             })
         end
 

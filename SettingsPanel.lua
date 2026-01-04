@@ -34,7 +34,7 @@ local function CreateSettingsPanel()
 
     local taxSlider = CreateFrame("Slider", "MapzerothLoadingScreenTaxSlider", panel, "OptionsSliderTemplate")
     taxSlider:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 4, -32)
-    taxSlider:SetMinMaxValues(0, 60)
+    taxSlider:SetMinMaxValues(0, 30)
     taxSlider:SetValueStep(1)
     taxSlider:SetObeyStepOnDrag(true)
     taxSlider:SetWidth(300)
@@ -44,7 +44,7 @@ local function CreateSettingsPanel()
 
     -- Low/High labels
     _G[taxSlider:GetName() .. "Low"]:SetText("0s")
-    _G[taxSlider:GetName() .. "High"]:SetText("60s")
+    _G[taxSlider:GetName() .. "High"]:SetText("30s")
 
     taxSlider:SetValue(initialTax)
 
@@ -104,7 +104,7 @@ local function CreateSettingsPanel()
 
     panel.refresh = function()
         -- Load saved values
-        local tax = MapzerothDB.settings.loadingScreenTax or 15
+        local tax = MapzerothDB.settings.loadingScreenTax or 10
         taxSlider:SetValue(tax)
         taxValue:SetText(tax .. " seconds")
 
@@ -118,12 +118,12 @@ local function CreateSettingsPanel()
     -----------------------------------------------------------
 
     panel.default = function()
-        -- Reset to defaults
-        taxSlider:SetValue(15)
+        -- Reset GUI to defaults
+        taxSlider:SetValue(10)
         minimapCheckbox:SetChecked(true)
 
         -- Apply defaults
-        MapzerothDB.settings.loadingScreenTax = 15
+        MapzerothDB.settings.loadingScreenTax = 10
         addon:ShowMinimapButton()
 
         print("[Mapzeroth] Settings reset to defaults")

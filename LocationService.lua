@@ -268,7 +268,7 @@ function addon:GetAvailableTravelAbilities()
                 cooldown = item.cooldown,
                 destination = item.destination,
                 destinations = item.destinations,
-                type = "item",
+                type = item.type,
                 itemID = item.itemID
             }
 

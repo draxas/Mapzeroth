@@ -975,8 +975,8 @@ ns.Nodes = {
             name = "Karazhan (Burning Crusade)",
             category = "raid",
             mapID = 42,
-            x = 0.470,
-            y = 0.740
+            x = 0.4688,
+            y = 0.7468
         },
         BASTION_OF_TWILIGHT = {
             name = "Bastion of Twilight",
