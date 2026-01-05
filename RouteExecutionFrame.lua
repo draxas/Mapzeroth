@@ -19,32 +19,6 @@ local COLOURS = {
     cardBg = {0.1, 0.1, 0.1, 0.8}
 }
 
--- Travel method icons
-local TRAVEL_ICONS = {
-    portal = "Interface\\Icons\\Spell_Arcane_PortalOrgrimmar",
-    ship = "Interface\\Icons\\Spell_Frost_SummonWaterElemental",
-    tram = "Interface\\Icons\\INV_Misc_EngGizmos_20",
-    flight = "Interface\\Icons\\Ability_Mount_JungleTiger",
-    fly = "Interface\\Icons\\Ability_Druid_FlightForm",
-    walk = "Interface\\Icons\\Ability_Rogue_Sprint",
-    teleport = "Interface\\Icons\\Spell_Arcane_Teleportorgrimmar",
-    hearthstone = "Interface\\Icons\\INV_Misc_Rune_01",
-    racial = "Interface\\Icons\\INV_Misc_Gear_01"
-}
-
-local METHOD_DISPLAY_TEXT = {
-    portal = "Portal to",
-    ship = "Boat to",
-    tram = "Tram to",
-    flight = "Flightpath to",
-    fly = "Fly to",
-    walk = "Walk to",
-    teleport = "Teleport to",
-    hearthstone = "Hearth to",
-    racial = "Use",
-    zeppelin = "Zeppelin to"
-}
-
 local executionFrame = nil
 local stepButtons = {}
 
@@ -307,7 +281,7 @@ local function CreateStepButton(parent, stepData, stepNum)
     end
     
     if not iconPath then
-        iconPath = TRAVEL_ICONS[stepData.method] or TRAVEL_ICONS["walk"]
+        iconPath = addon.TRAVEL_ICONS[stepData.method] or addon.TRAVEL_ICONS["walk"]
     end
     icon:SetTexture(iconPath)
     
@@ -320,7 +294,7 @@ local function CreateStepButton(parent, stepData, stepNum)
             actionText = string.format("Use %s", stepData.abilityName)
         end
     else
-        local methodPrefix = METHOD_DISPLAY_TEXT[stepData.method] or "Go to"
+        local methodPrefix = addon.METHOD_DISPLAY_TEXT[stepData.method] or "Go to"
         actionText = string.format("%s %s", methodPrefix, stepData.destination)
     end
     

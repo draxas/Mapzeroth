@@ -94,18 +94,6 @@ function PriorityQueue:isEmpty()
     return self.size == 0
 end
 
-local METHOD_DISPLAY_TEXT = {
-    portal = "Take portal to",
-    ship = "Take ship to",
-    tram = "Take tram to",
-    flight = "Take flight path to",
-    fly = "Fly to",
-    walk = "Walk to",
-    teleport = "Teleport to",
-    hearthstone = "Hearth to",
-    racial = "Use" -- Will be "Use Mole Machine"
-}
-
 -----------------------------------------------------------
 -- FIND NODE IN HIERARCHICAL GRAPH
 -----------------------------------------------------------
@@ -357,7 +345,7 @@ function addon:FormatPath(path, totalCost, previous)
             if prevInfo.abilityName then
                 actionText = string.format("Use %s", prevInfo.abilityName)
             else
-                local methodText = METHOD_DISPLAY_TEXT[prevInfo.method] or "Travel to"
+                local methodText = addon.METHOD_DISPLAY_TEXT[prevInfo.method] or "Travel to"
                 actionText = string.format("%s waypoint", methodText)
             end
             table.insert(output, string.format("  %d. %s (%.0fs)", i, actionText, prevInfo.cost))
@@ -370,7 +358,7 @@ function addon:FormatPath(path, totalCost, previous)
                     actionText = string.format("Use %s", prevInfo.abilityName)
                 end
             else
-                local methodText = METHOD_DISPLAY_TEXT[prevInfo.method] or "Travel to"
+                local methodText = addon.METHOD_DISPLAY_TEXT[prevInfo.method] or "Travel to"
                 actionText = string.format("%s %s", methodText, node.name)
             end
             table.insert(output, string.format("  %d. %s (%.0fs)", i, actionText, prevInfo.cost))
@@ -400,10 +388,14 @@ function addon:BuildSyntheticEdges(playerLocation, playerAbilities, optionalWayp
     local coordDestinations = {}
 
     if optionalWaypoint then
+        local method = "walk"
+        if not addon.NO_FLY_MAPS[optionalWaypoint.mapID] then
+            method = "fly"
+        end
         table.insert(coordDestinations, {
             nodeID = "_WAYPOINT_DESTINATION",
             coords = optionalWaypoint,
-            method = "fly",
+            method = method,
             fromPlayer = false
         })
     end

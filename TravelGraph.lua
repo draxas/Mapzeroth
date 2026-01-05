@@ -10,32 +10,12 @@ local rawNodes = addon.Nodes or {}
 local rawEdges = addon.Edges or {}
 
 -- Constants
-local TRAVEL_COSTS = {
-    portal = 0,
-    ship = 60,
-    tram = 90,
-    walk = 30,
-    fly = 10,
-    flight = 120
-}
-
-local WALK_SPEED = 15
-local FLY_SPEED = 60
-local MAP_SCALE = 1000
-local MAX_AUTO_EDGE_DISTANCE = 3000
-
-local NO_FLY_MAPS = {
-    [1670] = true, -- Oribos
-    [1671] = true, -- Oribos (Ring)
-    [1543] = true, -- The Maw
-    [2346] = true, -- Undermine
-    [554] = true, -- Timeless Isle
-    [885] = true, -- Antoran Wastes
-    [882] = true, -- Eredath
-    [830] = true, -- Krokuun
-    [883] = true, -- Vindicaar, Argus
-    [407] = true, -- Darkmoon
-}
+local TRAVEL_COSTS = addon.TRAVEL_COSTS
+local WALK_SPEED = addon.WALK_SPEED
+local FLY_SPEED = addon.FLY_SPEED
+local MAP_SCALE = addon.MAP_SCALE
+local MAX_AUTO_EDGE_DISTANCE = addon.MAX_AUTO_EDGE_DISTANCE
+local NO_FLY_MAPS = addon.NO_FLY_MAPS
 
 -----------------------------------------------------------
 -- STANDALONE HELPERS (used during graph building)
@@ -290,9 +270,6 @@ end
 
 local instance = buildGraph(rawNodes, rawEdges)
 setmetatable(instance, TravelGraph)
-instance.NO_FLY_MAPS = NO_FLY_MAPS
-instance.FLY_SPEED = FLY_SPEED
-instance.WALK_SPEED = WALK_SPEED
 addon.TravelGraph = instance
 injectAutoTraversalEdges(addon.TravelGraph)
 

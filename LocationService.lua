@@ -190,30 +190,11 @@ end
 -----------------------------------------------------------
 
 function addon:CalculateTravelToNode(distance, mapID)
-    -- Constants (should match TravelGraph.lua)
-    local WALK_SPEED = 7 -- yards/sec
-    local FLY_SPEED = 21 -- yards/sec  
-    local MAP_SCALE = 1000 -- yards per map coordinate
-
-    -- Convert map distance to yards
-    local yards = distance * MAP_SCALE
-
-    -- Determine if we can fly here
-    -- For now, assume we can fly everywhere except Oribos and the Maw
-    local canFly = true
-    local noFlyMaps = {
-        [1670] = true, -- Oribos
-        [1671] = true, -- Oribos
-        [1543] = true, -- The Maw
-        [2346] = true -- Undermine
-    }
-
-    if noFlyMaps[mapID] then
-        canFly = false
-    end
+    local yards = distance * addon.MAP_SCALE
+    local canFly = not addon.NO_FLY_MAPS[mapID]
+    local speed = canFly and addon.FLY_SPEED or addon.WALK_SPEED
 
     -- Calculate time
-    local speed = canFly and FLY_SPEED or WALK_SPEED
     local time = yards / speed
 
     -- Round up to nearest 5 seconds
