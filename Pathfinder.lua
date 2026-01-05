@@ -246,57 +246,61 @@ function addon:FindPath(startNodeID, endNodeID, playerAbilities, syntheticEdges)
             local currentNode = findNodeInHierarchy(augmented, currentID)
             if currentNode and currentNode.edges then
                 for _, edge in ipairs(currentNode.edges) do
-                    local neighborID = edge.to
-                    local neighborNode = findNodeInHierarchy(augmented, neighborID)
+                    if addon:CheckEdgeRequirements(edge) then
 
-                    if neighborNode then
-                        local playerFaction = addon:GetPlayerFaction()
-                        local nodeFaction = neighborNode.faction
+                        local neighborID = edge.to
+                        local neighborNode = findNodeInHierarchy(augmented, neighborID)
 
-                        local oppositeFaction
-                        if playerFaction == "ALLIANCE" then
-                            oppositeFaction = "HORDE"
-                        else
-                            oppositeFaction = "ALLIANCE"
-                        end
+                        if neighborNode then
+                            local playerFaction = addon:GetPlayerFaction()
+                            local nodeFaction = neighborNode.faction
 
-                        -- Flight nodes are always accessible for pathfinding purposes
-                        local isFlightNode = neighborNode.id:match("_FLIGHT$")
+                            local oppositeFaction
+                            if playerFaction == "ALLIANCE" then
+                                oppositeFaction = "HORDE"
+                            else
+                                oppositeFaction = "ALLIANCE"
+                            end
 
-                        -- Only process if faction matches
-                        if nodeFaction ~= oppositeFaction or isFlightNode then
-                            -- Add loading tax for teleportation methods
-                            local edgeCost = edge.cost
-                            if edge.method == "portal" or edge.method == "teleport" or edge.method == "hearthstone" or
-                                edge.method == "racial" then
-                                if MapzerothDB and MapzerothDB.settings and MapzerothDB.settings.loadingScreenTax then
-                                    edgeCost = edgeCost + MapzerothDB.settings.loadingScreenTax
+                            -- Flight nodes are always accessible for pathfinding purposes
+                            local isFlightNode = neighborNode.id:match("_FLIGHT$")
+
+                            -- Only process if faction matches
+                            if nodeFaction ~= oppositeFaction or isFlightNode then
+                                -- Add loading tax for teleportation methods
+                                local edgeCost = edge.cost
+                                if edge.method == "portal" or edge.method == "teleport" or edge.method == "hearthstone" or
+                                    edge.method == "racial" then
+                                    if MapzerothDB and MapzerothDB.settings and MapzerothDB.settings.loadingScreenTax then
+                                        edgeCost = edgeCost + MapzerothDB.settings.loadingScreenTax
+                                    end
+                                end
+
+                                local newDist = currentDist + edgeCost
+                                local currentNeighborDist = distances[neighborID] or math.huge
+
+                                if newDist < currentNeighborDist then
+                                    distances[neighborID] = newDist
+                                    previous[neighborID] = {
+                                        node = currentID,
+                                        method = edge.method,
+                                        cost = edgeCost,
+                                        abilityName = edge.abilityName,
+                                        destinationName = edge.destinationName,
+                                        isSynthetic = edge.isSynthetic,
+                                        itemID = edge.itemID,
+                                        itemType = edge.itemType,
+                                        spellID = edge.spellID
+                                    }
+                                    pq:push(neighborID, newDist)
                                 end
                             end
-
-                            local newDist = currentDist + edgeCost
-                            local currentNeighborDist = distances[neighborID] or math.huge
-
-                            if newDist < currentNeighborDist then
-                                distances[neighborID] = newDist
-                                previous[neighborID] = {
-                                    node = currentID,
-                                    method = edge.method,
-                                    cost = edgeCost,
-                                    abilityName = edge.abilityName,
-                                    destinationName = edge.destinationName,
-                                    isSynthetic = edge.isSynthetic,
-                                    itemID = edge.itemID,
-                                    itemType = edge.itemType,
-                                    spellID = edge.spellID
-                                }
-                                pq:push(neighborID, newDist)
+                        elseif not neighborNode then
+                            if addon.DEBUG then
+                                print(string.format(
+                                    "[Mapzeroth] WARNING: Edge from '%s' points to non-existent node '%s'", currentID,
+                                    neighborID))
                             end
-                        end
-                    elseif not neighborNode then
-                        if addon.DEBUG then
-                            print(string.format("[Mapzeroth] WARNING: Edge from '%s' points to non-existent node '%s'",
-                                currentID, neighborID))
                         end
                     end
                 end
@@ -323,63 +327,6 @@ function addon:FindPath(startNodeID, endNodeID, playerAbilities, syntheticEdges)
 end
 
 -----------------------------------------------------------
--- UTILITY: Normalize Start of Path
------------------------------------------------------------
-
-function addon:NormalizePath(path, cost, previous, startNode, playerLocation)
-    if not path or #path == 0 then
-        return path, cost, previous
-    end
-    
-    local firstNodeID = path[1]
-    local firstPrev = previous[firstNodeID]
-    
-    -- Check if first step is a teleport
-    local usedTeleport = firstPrev and 
-        (firstPrev.method == "teleport" or 
-         firstPrev.method == "hearthstone" or 
-         firstPrev.method == "racial")
-    
-    -- If we teleported, path is already complete
-    if usedTeleport then
-        return path, cost, previous
-    end
-    
-    -- Calculate distance to start node
-    local dx = startNode.x - playerLocation.x
-    local dy = startNode.y - playerLocation.y
-    local distance = math.sqrt(dx * dx + dy * dy)
-    
-    -- If we're already at the node, path is complete
-    if distance < 0.01 then
-        return path, cost, previous
-    end
-    
-    -- Add initial walk/fly step
-    local initialTime, initialMethod = self:CalculateTravelToNode(distance, playerLocation.mapID)
-    
-    -- Create synthetic node for initial step
-    local INITIAL_STEP_NODE = "_INITIAL_STEP"
-    
-    -- Inject into path at position 1
-    table.insert(path, 1, INITIAL_STEP_NODE)
-    
-    -- Add to previous table
-    previous[INITIAL_STEP_NODE] = {
-        node = "_PLAYER_POSITION",
-        method = initialMethod,
-        cost = initialTime,
-        destination = startNode.name,
-        nodeID = startNode.id
-    }
-    
-    -- Update cost
-    local totalCost = cost + initialTime
-    
-    return path, totalCost, previous
-end
-
------------------------------------------------------------
 -- UTILITY: Format Path for Display
 -----------------------------------------------------------
 
@@ -392,14 +339,19 @@ function addon:FormatPath(path, totalCost, previous)
     table.insert(output, string.format("[Mapzeroth] Route found (%.0f seconds):", totalCost))
 
     for i, nodeID in ipairs(path) do
+        if addon.DEBUG then
+            print(string.format("  FormatPath processing i=%d, nodeID=%s, prevInfo=%s", i, nodeID,
+                previous[nodeID] and "exists" or "nil"))
+        end
         local node = self.TravelGraph:GetNodeByID(nodeID)
         local prevInfo = previous[nodeID]
-        
+
         if not prevInfo then
             -- Skip
         elseif nodeID == "_INITIAL_STEP" then
             local methodText = prevInfo.method == "fly" and "Fly to" or "Walk to"
-            table.insert(output, string.format("  %d. %s %s (%.0fs)", i, methodText, prevInfo.destination, prevInfo.cost))
+            table.insert(output,
+                string.format("  %d. %s %s (%.0fs)", i, methodText, prevInfo.destination, prevInfo.cost))
         elseif nodeID == "_WAYPOINT_DESTINATION" then
             local actionText
             if prevInfo.abilityName then

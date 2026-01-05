@@ -306,6 +306,12 @@ function addon:FindRoute(destinationID)
 
     -- Find path
     local path, cost, previous = self:FindPath("_PLAYER_POSITION", destinationID, playerAbilities, synthetic)
+    if addon.DEBUG then
+        print("[Mapzeroth] Path nodes:")
+        for i, nodeID in ipairs(path) do
+            print(string.format("  %d: %s", i, nodeID))
+        end
+    end
 
     if not path then
         print("[Mapzeroth] " .. cost)
@@ -313,7 +319,7 @@ function addon:FindRoute(destinationID)
     end
 
     -- NORMALIZE: Inject initial step
-    path, cost, previous = self:NormalizePath(path, cost, previous, startNode, location)
+    -- path, cost, previous = self:NormalizePath(path, cost, previous, startNode, location)
 
     -- Output (simplified!)
     if addon.MapzerothFrame and addon.MapzerothFrame:IsShown() then

@@ -34,6 +34,7 @@ local NO_FLY_MAPS = {
     [882] = true, -- Eredath
     [830] = true, -- Krokuun
     [883] = true, -- Vindicaar, Argus
+    [407] = true, -- Darkmoon
 }
 
 -----------------------------------------------------------
@@ -207,7 +208,8 @@ local function buildGraph(hierarchicalNodes, edgeList)
             table.insert(fromNode.edges, {
                 to = edgeData.to,
                 method = edgeData.method,
-                cost = cost
+                cost = cost,
+                requirements = edgeData.requirements
             })
             graph.edgeCount = graph.edgeCount + 1
 
@@ -215,7 +217,8 @@ local function buildGraph(hierarchicalNodes, edgeList)
                 table.insert(toNode.edges, {
                     to = edgeData.from,
                     method = edgeData.method,
-                    cost = cost
+                    cost = cost,
+                    requirements = edgeData.requirements
                 })
                 graph.edgeCount = graph.edgeCount + 1
             end

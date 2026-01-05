@@ -11,6 +11,7 @@ addon.DEBUG = false
 local frame = CreateFrame("Frame")
 frame:RegisterEvent("PLAYER_LOGIN")
 frame:RegisterEvent("HEARTHSTONE_BOUND")
+frame:RegisterEvent("CALENDAR_UPDATE_EVENT_LIST")
 frame:SetScript("OnEvent", function(self, event)
     if event == "PLAYER_LOGIN" then
         print("[Mapzeroth] Loaded successfully! Type /mapzeroth help for commands.")
@@ -35,5 +36,7 @@ frame:SetScript("OnEvent", function(self, event)
             print("[Mapzeroth] DEBUG: HEARTHSTONE_BOUND event fired!") 
         end
         addon:UpdateHearthstoneLocation()
+    elseif event == "CALENDAR_UPDATE_EVENT_LIST" then
+        addon:OnCalendarReady()
     end
 end)

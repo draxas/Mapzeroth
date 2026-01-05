@@ -47,6 +47,12 @@ ns.Nodes = {
             x = 0.268,
             y = 0.355
         },
+        DARKMOON_FAIRE_ENTRANCE_ELWYNN = {
+            name = "Darkmoon Faire Entrance, Elwynn Forest",
+            mapID = 37,
+            x = 0.4179,
+            y = 0.6940
+        },
         -- Ironforge
         IF_TRAM = {
             name = "Ironforge Deeprun Tram",
@@ -1187,6 +1193,12 @@ ns.Nodes = {
             mapID = 88,
             x = 0.1879,
             y = 0.2564
+        },
+        DARKMOON_FAIRE_ENTRANCE_MULGORE = {
+            name = "Darkmoon Faire Entrance, Mulgore",
+            mapID = 7,
+            x = 0.3680,
+            y = 0.3582
         },
         BLOODHOOF_VILLAGE_FLIGHT = {
             name = "Bloodhoof Village",
@@ -6139,7 +6151,7 @@ ns.Nodes = {
             name = "Grim Campfire",
             mapID = 543,
             x = 0.740,
-            y = 0.245 
+            y = 0.245
         },
         WILDWOOD_WASH_FLIGHT = {
             name = "Wildwood Wash",
@@ -7183,6 +7195,21 @@ ns.Nodes = {
             x = 0.410,
             y = 0.210
         }
+    },
+
+    DARKMOON_FAIRE = {
+        DARKMOON_ENTRANCE = {
+            name = "Darkmoon Faire Entrance, Darkmoon Island",
+            mapID = 407,
+            x = 0.5129,
+            y = 0.2386
+        },
+        DARKMOON_DOCK_EXIT = {
+            name = "Darkmoon Faire Dock, Darkmoon Island",
+            mapID = 407,
+            x = 0.5056,
+            y = 0.9055
+        }
     }
 }
 
@@ -7296,8 +7323,7 @@ ns.Edges = { -- Stormwind Internal Navigation
     from = "EASTERN_EARTHSHRINE_SW",
     to = "MOUNT_HYJAL",
     method = "portal"
-}, 
--- Stormwind Embassy & Harbour
+}, -- Stormwind Embassy & Harbour
 {
     from = "SW_EMBASSY",
     to = "VINDICAAR_AZEROTH",
@@ -7326,8 +7352,7 @@ ns.Edges = { -- Stormwind Internal Navigation
     to = "GROMGOL_ZEPPELIN",
     method = "zeppelin",
     cost = 120
-},
--- Exodar
+}, -- Exodar
 {
     from = "EXODAR",
     to = "STORMWIND_PORTAL_ROOM",
@@ -7365,8 +7390,7 @@ ns.Edges = { -- Stormwind Internal Navigation
     to = "ORGRIMMAR_PORTAL_ROOM",
     method = "portal",
     oneway = true
-},
--- Oribos
+}, -- Oribos
 {
     from = "ORIBOS",
     to = "ORIBOS_FLIGHT",
@@ -7427,8 +7451,7 @@ ns.Edges = { -- Stormwind Internal Navigation
     from = "RUTTHERAN_VILLAGE_DOCK",
     to = "AZUREMYST_ISLE_DOCK",
     method = "portal"
-},
--- Valdrakken
+}, -- Valdrakken
 {
     from = "VALDRAKKEN",
     to = "AMIRDRASSIL",
@@ -7775,6 +7798,58 @@ ns.Edges = { -- Stormwind Internal Navigation
     from = "GRIM_CAMPFIRE_PANDARIA",
     to = "GRIM_CAMPFIRE_GORGROND",
     method = "teleport"
+}, {
+    from = "DARKMOON_FAIRE_ENTRANCE_ELWYNN",
+    to = "DARKMOON_ENTRANCE",
+    method = "teleport",
+    requirements = {
+        holiday = "Darkmoon Faire",
+        faction = "Alliance"
+    }
+}, {
+    from = "DARKMOON_FAIRE_ENTRANCE_ELWYNN",
+    to = "DARKMOON_ENTRANCE",
+    method = "teleport",
+    oneway = true,
+    requirements = {
+        holiday = "Darkmoon Faire",
+        faction = "Horde"
+    }
+}, {
+    from = "DARKMOON_FAIRE_ENTRANCE_MULGORE",
+    to = "DARKMOON_ENTRANCE",
+    method = "teleport",
+    requirements = {
+        holiday = "Darkmoon Faire",
+        faction = "Horde"
+    }
+}, {
+    from = "DARKMOON_FAIRE_ENTRANCE_MULGORE",
+    to = "DARKMOON_ENTRANCE",
+    method = "teleport",
+    oneway = true,
+    requirements = {
+        holiday = "Darkmoon Faire",
+        faction = "Alliance"
+    }
+}, {
+    from = "DARKMOON_DOCK_EXIT",
+    to = "DARKMOON_FAIRE_ENTRANCE_ELWYNN",
+    method = "teleport",
+    oneway = true,
+    requirements = {
+        holiday = "Darkmoon Faire",
+        faction = "Alliance"
+    }
+}, {
+    from = "DARKMOON_DOCK_EXIT",
+    to = "DARKMOON_FAIRE_ENTRANCE_MULGORE",
+    method = "teleport",
+    oneway = true,
+    requirements = {
+        holiday = "Darkmoon Faire",
+        faction = "Horde"
+    }
 }}
 
 -----------------------------------------------------------
@@ -7799,6 +7874,7 @@ ns.MapToTraversal = {
     [207] = "DEEPHOLM",
     [245] = "TOL_BARAD",
     [89] = "TELDRASSIL",
+    [407] = "DARKMOON_FAIRE",
     [464] = "TELDRASSIL",
     [110] = "QUELTHALAS",
     [95] = "QUELTHALAS",
