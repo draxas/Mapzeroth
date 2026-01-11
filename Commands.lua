@@ -285,36 +285,14 @@ function addon:FindRoute(destinationID)
     end
 
     local playerAbilities = addon:GetAvailableTravelAbilities()
-    local location = addon:GetPlayerLocation()
+    local location = addon:GetPlayerLocation()  -- Can be nil in instances - that's fine!
 
-    -- Build synthetic edges (includes waypoint node)
+    -- Build ALL synthetic edges (abilities + walking, if location exists)
     local synthetic = addon:BuildSyntheticEdges(location, playerAbilities, waypoint)
-
-    -- Add edges from player to nearby nodes
-    local MAX_PLAYER_RANGE = 2.0
-    for traversalGroup, groupData in pairs(self.TravelGraph.nodes) do
-        for nodeID, node in pairs(groupData) do
-            if node.mapID == location.mapID and node.x and node.y then
-                local dx = node.x - location.x
-                local dy = node.y - location.y
-                local dist = math.sqrt(dx * dx + dy * dy)
-
-                if dist <= MAX_PLAYER_RANGE then
-                    local travelTime, travelMethod = addon:CalculateTravelToNode(dist, location.mapID)
-                    table.insert(synthetic.edges, {
-                        from = "_PLAYER_POSITION",
-                        to = nodeID,
-                        method = travelMethod,
-                        cost = travelTime,
-                        isSynthetic = true
-                    })
-                end
-            end
-        end
-    end
 
     -- Find path
     local path, cost, previous = addon:FindPath("_PLAYER_POSITION", destinationID, playerAbilities, synthetic)
+    
     if addon.DEBUG then
         print("[Mapzeroth] Path nodes:")
         for i, nodeID in ipairs(path) do
@@ -327,7 +305,7 @@ function addon:FindRoute(destinationID)
         return
     end
 
-    -- Output (simplified!)
+    -- Output
     local steps = BuildStepList(path, cost, previous, waypoint)
     if addon.MapzerothFrame and addon.MapzerothFrame:IsShown() then
         steps = addon:OptimizeConsecutiveMovement(steps)
