@@ -7351,7 +7351,10 @@ ns.Edges = { -- Stormwind Internal Navigation
     from = "STORMWIND_PORTAL_ROOM",
     to = "DARK_PORTAL_BL",
     method = "portal",
-    oneway = true
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
 }, {
     from = "STORMWIND_PORTAL_ROOM",
     to = "BELAMETH",
@@ -7769,6 +7772,14 @@ ns.Edges = { -- Stormwind Internal Navigation
     from = "DAZARALOR_PORTAL_ROOM",
     to = "ORGRIMMAR_PORTAL_ROOM",
     method = "portal",
+    requirements = {
+        faction = "Horde"
+    }
+}, {
+    from = "ORGRIMMAR_PORTAL_ROOM",
+    to = "DARK_PORTAL_BL",
+    method = "portal",
+    oneway = true,
     requirements = {
         faction = "Horde"
     }

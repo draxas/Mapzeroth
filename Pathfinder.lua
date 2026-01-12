@@ -100,13 +100,27 @@ end
 -- Helper function to locate a node anywhere in the hierarchy.
 -- Used by Dijkstra and augmented graph building.
 
-local function findNodeInHierarchy(hierarchicalGraph, nodeID)
+local function findNodeInHierarchy(hierarchicalGraph, nodeIdentifier)
+    -- Fast path: try as direct ID lookup
     for traversalGroup, groupData in pairs(hierarchicalGraph.nodes) do
-        if groupData and groupData[nodeID] then
-            return groupData[nodeID]
+        if groupData and groupData[nodeIdentifier] then
+            return groupData[nodeIdentifier], nodeIdentifier
         end
     end
-    return nil
+    
+    -- Slow path: search by name (case-insensitive)
+    local searchName = nodeIdentifier:lower()
+    for traversalGroup, groupData in pairs(hierarchicalGraph.nodes) do
+        if groupData then
+            for nodeID, nodeData in pairs(groupData) do
+                if nodeData.name and nodeData.name:lower() == searchName then
+                    return nodeData, nodeID  -- Return both!
+                end
+            end
+        end
+    end
+    
+    return nil, nil
 end
 
 -----------------------------------------------------------
@@ -197,7 +211,7 @@ function addon:FindPath(startNodeID, endNodeID, playerAbilities, syntheticEdges)
 
     -- Find start and end nodes in the hierarchy
     local startNode = findNodeInHierarchy(augmented, startNodeID)
-    local endNode = findNodeInHierarchy(augmented, endNodeID)
+    local endNode, resolvedEndID = findNodeInHierarchy(augmented, endNodeID)
 
     -- Validate inputs
     if not startNode then
@@ -206,6 +220,8 @@ function addon:FindPath(startNodeID, endNodeID, playerAbilities, syntheticEdges)
     if not endNode then
         return nil, string.format("End node '%s' not found", endNodeID)
     end
+
+    endNodeID = resolvedEndID
 
     -- Early exit if start == end
     if startNodeID == endNodeID then
