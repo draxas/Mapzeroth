@@ -4825,13 +4825,13 @@ ns.Nodes = {
 
     SL_ORIBOS = {
         ORIBOS = {
-            name = "Entrance",
+            name = "Entrance, Oribos",
             mapID = 1670,
             x = 0.203,
             y = 0.503
         },
         ORIBOS_FLIGHT = {
-            name = "Flightmaster",
+            name = "Flightmaster, Oribos",
             category = "city",
             mapID = 1671,
             x = 0.607,

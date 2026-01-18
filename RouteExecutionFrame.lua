@@ -28,18 +28,18 @@ local stepButtons = {}
 local function BuildStepMacro(stepData)
     if stepData.spellID then
         local spellInfo = C_Spell.GetSpellInfo(stepData.spellID)
-        
+
         if spellInfo then
-           return string.format("/cast %s", spellInfo.name) 
+            return string.format("/cast %s", spellInfo.name)
         else
             -- Fallback to ID (might not work, but worth trying)
             return string.format("/cast %d", stepData.spellID)
         end
-        
+
     elseif stepData.itemID then
         -- Get localized item name from ID
         local itemName = C_Item.GetItemInfo(stepData.itemID)
-        
+
         if itemName then
             return string.format("/use %s", itemName)
         else
@@ -47,7 +47,7 @@ local function BuildStepMacro(stepData)
             return string.format("/use %d", stepData.itemID)
         end
     end
-    
+
     return nil
 end
 
@@ -83,12 +83,12 @@ local function SetWaypoint(mapID, x, y, nodeName, method)
 
     if success then
         print(string.format("[Mapzeroth] Waypoint set: %s", nodeName or "destination"))
-        
+
         -- Ping the map to draw attention
         if C_SuperTrack then
             C_SuperTrack.SetSuperTrackedUserWaypoint(true)
         end
-        
+
         return true
     else
         print("[Mapzeroth] Failed to set waypoint")
@@ -114,40 +114,52 @@ local function CreateExecutionFrame()
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", frame.StartMoving)
     frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-    
+
     -- Material design backdrop
     frame:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8x8",
         edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
         tile = false,
         edgeSize = 8,
-        insets = { left = 2, right = 2, top = 2, bottom = 2 }
+        insets = {
+            left = 2,
+            right = 2,
+            top = 2,
+            bottom = 2
+        }
     })
     frame:SetBackdropColor(unpack(COLOURS.background))
     frame:SetBackdropBorderColor(unpack(COLOURS.border))
-    
+
     -- Close on Escape
     tinsert(UISpecialFrames, frame:GetName())
-    
+
     -- Header bar
     local headerBar = CreateFrame("Frame", nil, frame, "BackdropTemplate")
     headerBar:SetPoint("TOPLEFT", frame, "TOPLEFT", 6, -6)
     headerBar:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -6, -6)
-    headerBar:SetHeight(30)
+    headerBar:SetHeight(40) -- Increase height to fit two lines
     headerBar:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8x8",
         tile = false
     })
     headerBar:SetBackdropColor(unpack(COLOURS.backgroundLight))
-    
+
     -- Title
     local title = headerBar:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    title:SetPoint("LEFT", headerBar, "LEFT", 10, 0)
+    title:SetPoint("TOPLEFT", headerBar, "TOPLEFT", 10, -6)
     title:SetText("Route")
     title:SetTextColor(unpack(COLOURS.text))
     frame.title = title
-    
-    -- Close button
+
+    -- Hint text (second line)
+    local hintText = headerBar:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    hintText:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -2)
+    hintText:SetText("Click steps with items/spells to use them instantly")
+    hintText:SetTextColor(0.5, 0.7, 0.9, 1) -- Subtle blue
+    frame.hintText = hintText
+
+    -- Close button (adjust position for taller header)
     local closeBtn = CreateFrame("Button", nil, headerBar, "BackdropTemplate")
     closeBtn:SetSize(24, 24)
     closeBtn:SetPoint("RIGHT", headerBar, "RIGHT", -4, 0)
@@ -156,12 +168,12 @@ local function CreateExecutionFrame()
         tile = false
     })
     closeBtn:SetBackdropColor(0, 0, 0, 0)
-    
+
     local symbol = closeBtn:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     symbol:SetPoint("CENTER", 0, 1)
     symbol:SetText("×")
     symbol:SetTextColor(unpack(COLOURS.textSecondary))
-    
+
     closeBtn:SetScript("OnEnter", function(self)
         self:SetBackdropColor(0.4, 0.1, 0.1, 0.8)
         symbol:SetTextColor(1, 1, 1, 1)
@@ -173,18 +185,18 @@ local function CreateExecutionFrame()
     closeBtn:SetScript("OnClick", function()
         frame:Hide()
     end)
-    
-    -- Container for step buttons (regular frame, not scrollframe)
+
+    -- Container for step buttons
     local container = CreateFrame("Frame", nil, frame)
     container:SetPoint("TOPLEFT", headerBar, "BOTTOMLEFT", 0, -10)
     container:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -10, 10)
     container:SetClipsChildren(true)
     frame.container = container
-    
+
     -- Apply saved scale
     local savedScale = MapzerothDB.settings.windowScale or 1.0
     frame:SetScale(savedScale)
-    
+
     addon.RouteExecutionFrame = frame
     return frame
 end
@@ -196,13 +208,13 @@ end
 local function CreateStepButton(parent, stepData, stepNum)
     -- Determine if this needs to be secure
     local needsSecure = (stepData.itemID or stepData.spellID) ~= nil
-    
+
     local frame
     if needsSecure then
         frame = CreateFrame("Button", nil, parent, "SecureActionButtonTemplate,BackdropTemplate")
         frame:SetAttribute("type", "macro")
         frame:RegisterForClicks("LeftButtonUp")
-        
+
         -- Set macro
         local macroText = BuildStepMacro(stepData)
         if macroText then
@@ -210,68 +222,64 @@ local function CreateStepButton(parent, stepData, stepNum)
         end
     else
         frame = CreateFrame("Button", nil, parent, "BackdropTemplate")
-        
+
         -- Click handler for walk/fly
-        frame:SetScript("OnClick", function(self)
-            local stepData = self.stepData
-            
-            -- Handle waypoint destination specially
-            if stepData.nodeID == "_WAYPOINT_DESTINATION" then
-                -- Use stored waypoint data
-                if stepData.waypointData then
-                    SetWaypoint(
-                        stepData.waypointData.mapID,
-                        stepData.waypointData.x,
-                        stepData.waypointData.y,
-                        "Waypoint",
-                        stepData.method
-                    )
-                else
-                    print("[Mapzeroth] Error: No waypoint data")
+        if stepData.method == "walk" or stepData.method == "fly" then
+            frame:SetScript("OnClick", function(self)
+                local stepData = self.stepData
+
+                -- Handle waypoint destination specially
+                if stepData.nodeID == "_WAYPOINT_DESTINATION" then
+                    -- Use stored waypoint data
+                    if stepData.waypointData then
+                        SetWaypoint(stepData.waypointData.mapID, stepData.waypointData.x, stepData.waypointData.y,
+                            "Waypoint", stepData.method)
+                    else
+                        print("[Mapzeroth] Error: No waypoint data")
+                    end
+                    return
                 end
-                return
-            end
-            
-            -- Regular node - look it up
-            local node = stepData.nodeID and addon.TravelGraph:GetNodeByID(stepData.nodeID)
-            if node then
-                SetWaypoint(node.mapID, node.x, node.y, node.displayName or node.name, stepData.method)
-            else
-                print("[Mapzeroth] Error: Could not find node")
-            end
-        end)
+                -- Regular node - look it up
+                local node = stepData.nodeID and addon.TravelGraph:GetNodeByID(stepData.nodeID)
+                if node then
+                    SetWaypoint(node.mapID, node.x, node.y, node.displayName or node.name, stepData.method)
+                else
+                    print("[Mapzeroth] Error: Could not find node")
+                end
+            end)
+        end
     end
-    
+
     frame:SetSize(FRAME_WIDTH - 30, STEP_HEIGHT - 5)
-    
+
     -- Material backdrop (card)
     frame:SetBackdrop({
         bgFile = "Interface\\Buttons\\WHITE8x8",
         tile = false
     })
     frame:SetBackdropColor(unpack(COLOURS.cardBg))
-    
+
     -- Store step data
     frame.stepData = stepData
-    
+
     -- Hover effect
     frame:EnableMouse(true)
     frame:SetHighlightTexture("Interface\\Buttons\\WHITE8x8")
     local highlight = frame:GetHighlightTexture()
     highlight:SetVertexColor(unpack(COLOURS.hoverBg))
     highlight:SetAllPoints(frame)
-    
+
     -- Step number
     local numText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     numText:SetPoint("LEFT", frame, "LEFT", 8, 0)
     numText:SetText(stepNum .. ".")
     numText:SetTextColor(unpack(COLOURS.textSecondary))
-    
+
     -- Icon
     local icon = frame:CreateTexture(nil, "ARTWORK")
     icon:SetSize(28, 28)
     icon:SetPoint("LEFT", numText, "RIGHT", 8, 0)
-    
+
     -- Get icon
     local iconPath
     if stepData.itemID then
@@ -282,12 +290,12 @@ local function CreateStepButton(parent, stepData, stepNum)
             iconPath = spellInfo.iconID
         end
     end
-    
+
     if not iconPath then
         iconPath = addon.TRAVEL_ICONS[stepData.method] or addon.TRAVEL_ICONS["walk"]
     end
     icon:SetTexture(iconPath)
-    
+
     -- Action text
     local actionText
     if stepData.abilityName then
@@ -300,32 +308,50 @@ local function CreateStepButton(parent, stepData, stepNum)
         local methodPrefix = addon.METHOD_DISPLAY_TEXT[stepData.method] or "Go to"
         actionText = string.format("%s %s", methodPrefix, stepData.destination)
     end
-    
+
     local destText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     destText:SetPoint("LEFT", icon, "RIGHT", 8, 0)
     destText:SetPoint("RIGHT", frame, "RIGHT", -60, 0)
     destText:SetJustifyH("LEFT")
     destText:SetText(actionText)
     destText:SetTextColor(unpack(COLOURS.text))
-    
+
     -- Time text
     local timeText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     timeText:SetPoint("RIGHT", frame, "RIGHT", -8, 0)
     timeText:SetJustifyH("RIGHT")
     timeText:SetTextColor(unpack(COLOURS.textSecondary))
     timeText:SetText(string.format("%.0fs", stepData.time))
-    
+
     -- Tooltip
     frame:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:SetText("Click to " .. string.lower(actionText), 1, 1, 1)
+
+        local tooltipText
+        if stepData.method == "portal" then
+            tooltipText = string.format("Use portal to %s",
+                stepData.destinationName or stepData.destination or "destination")
+        elseif stepData.method == "flightpath" then
+            tooltipText = string.format("Take flight path to %s",
+                stepData.destinationName or stepData.destination or "destination")
+        elseif stepData.method == "walk" or stepData.method == "fly" then
+            local dest = stepData.destinationName or stepData.destination or "destination"
+            tooltipText = string.format("Click to set waypoint to %s", dest)
+        elseif stepData.itemID or stepData.spellID then
+            tooltipText = string.format("Click to use %s", stepData.abilityName or "ability")
+        else
+            -- Fallback for any other method
+            tooltipText = actionText
+        end
+
+        GameTooltip:SetText(tooltipText, 1, 1, 1, 1, true)
         GameTooltip:Show()
     end)
-    
+
     frame:SetScript("OnLeave", function()
         GameTooltip:Hide()
     end)
-    
+
     return frame
 end
 
@@ -335,14 +361,14 @@ end
 
 function addon:ShowRouteExecutionFrame(steps, totalTime)
     local frame = CreateExecutionFrame()
-    
+
     -- Hide existing buttons
     for _, btn in ipairs(stepButtons) do
         btn:Hide()
         btn:SetParent(nil)
     end
     stepButtons = {}
-    
+
     -- Create step buttons
     local yOffset = 0
     for i, stepData in ipairs(steps) do
@@ -351,7 +377,7 @@ function addon:ShowRouteExecutionFrame(steps, totalTime)
         table.insert(stepButtons, stepBtn)
         yOffset = yOffset + STEP_HEIGHT
     end
-    
+
     -- Create total time footer
     local footer = CreateFrame("Frame", nil, frame.container, "BackdropTemplate")
     footer:SetSize(FRAME_WIDTH - 30, 35)
@@ -361,11 +387,11 @@ function addon:ShowRouteExecutionFrame(steps, totalTime)
         tile = false
     })
     footer:SetBackdropColor(unpack(COLOURS.backgroundLight))
-    
+
     local totalText = footer:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     totalText:SetPoint("CENTER", footer, "CENTER")
     totalText:SetTextColor(unpack(COLOURS.text))
-    
+
     if totalTime then
         local minutes = math.floor(totalTime / 60)
         local seconds = totalTime % 60
@@ -377,21 +403,21 @@ function addon:ShowRouteExecutionFrame(steps, totalTime)
     else
         totalText:SetText("Total Time: N/A")
     end
-    
+
     table.insert(stepButtons, footer) -- Track for cleanup
     yOffset = yOffset + 35
-    
+
     -- Resize frame to fit content
     local frameHeight = yOffset + 60 -- 30 for header, 30 for padding
     frame:SetHeight(math.min(frameHeight, 600)) -- Cap at 600px
-    
+
     -- Position frame
     if addon.MapzerothFrame and addon.MapzerothFrame:IsShown() then
         frame:SetPoint("TOPLEFT", addon.MapzerothFrame, "BOTTOMLEFT", 0, -10)
     else
         frame:SetPoint("CENTER", UIParent, "CENTER")
     end
-    
+
     frame:Show()
 end
 
