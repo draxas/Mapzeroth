@@ -426,7 +426,13 @@ function addon:OptimizeConsecutiveMovement(steps)
         end
     end
 
-    return optimized
+    -- Calculate new total cost
+    local newCost = 0
+    for _, step in ipairs(optimized) do
+        newCost = newCost + (step.time or 0)
+    end
+
+    return optimized, newCost
 end
 
 -----------------------------------------------------------
@@ -442,7 +448,7 @@ function addon:BuildSyntheticEdges(playerLocation, playerAbilities, optionalWayp
         edges = {}
     }
     local VIRTUAL_START = "_PLAYER_POSITION"
-    
+
     -- maxCooldownValue is in hours, multiply by 3600 for seconds
     local maxCooldownSeconds = MapzerothDB.settings.maxCooldownValue * 3600
     local acceptableCooldown = false

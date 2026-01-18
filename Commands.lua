@@ -325,12 +325,12 @@ function addon:FindRoute(destinationID)
 
     -- Output
     local steps = BuildStepList(path, cost, previous, waypoint)
+    local optimizedSteps, optimizedCost = addon:OptimizeConsecutiveMovement(steps)
+    
     if addon.MapzerothFrame and addon.MapzerothFrame:IsShown() then
-        steps = addon:OptimizeConsecutiveMovement(steps)
-        addon:ShowRouteExecutionFrame(steps, cost)
+        addon:ShowRouteExecutionFrame(optimizedSteps, optimizedCost)
     else
-        steps = addon:OptimizeConsecutiveMovement(steps)
-        print(FormatPathFromSteps(steps, cost))
+        print(FormatPathFromSteps(optimizedSteps, optimizedCost))
     end
 end
 
