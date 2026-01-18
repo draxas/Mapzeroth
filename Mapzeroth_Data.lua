@@ -197,6 +197,12 @@ ns.Nodes = {
             x = 0.757,
             y = 0.533
         },
+        SANCTUM_OF_LIGHT = {
+            name = "Sanctum of Light",
+            mapID = 24,
+            x = 0.3942,
+            y = 0.6146
+        },
         BIZMOS_BRAWLPUB = {
             name = "Bizmo's Brawlpub",
             faction = "ALLIANCE",
@@ -1204,6 +1210,12 @@ ns.Nodes = {
             mapID = 85,
             x = 0.4827,
             y = 0.5791
+        },
+        BRAWLGAR_ARENA = {
+            name = "Brawl'gar Arena",
+            mapID = 85,
+            x = 0.7055,
+            y = 0.3117
         },
         THUNDER_BLUFF = {
             name = "Entrance",
@@ -3645,8 +3657,8 @@ ns.Nodes = {
         DALARAN_BROKEN_ISLES = {
             name = "Dalaran (Broken Isles)",
             mapID = 627,
-            x = 0.609,
-            y = 0.447
+            x = 0.6092,
+            y = 0.4472
         },
         DALARAN_BROKEN_ISLES_FLIGHT = {
             name = "Dalaran (Broken Isles) Flightmaster",
@@ -3666,14 +3678,28 @@ ns.Nodes = {
             name = "Dalaran (Broken Isles) Portal",
             faction = "HORDE",
             mapID = 627,
-            x = 0.5781,
-            y = 0.1924
+            x = 0.6173,
+            y = 0.1400
         },
         DALARAN_BROKEN_ISLES_PET = {
             name = "Dalaran Pet Shop",
             mapID = 627,
             x = 0.5835,
             y = 0.3960
+        },
+        DALARAN_PALADIN_PORTAL_ALLIANCE = {
+            name = "Sanctum of Light Portal",
+            faction = "ALLIANCE",
+            mapID = 627,
+            x = 0.3285,
+            y = 0.6952
+        },
+        DALARAN_PALADIN_PORTAL_HORDE = {
+            name = "Sanctum of Light Portal",
+            faction = "HORDE",
+            mapID = 627,
+            x = 0.3285,
+            y = 0.6952
         },
         VALSHARAH = {
             name = "Lorlathil Portal",
@@ -4975,7 +5001,7 @@ ns.Nodes = {
             y = 0.742
         },
         -- Dungeons
-        NECROTIC_WAKE_DUNGEON = {
+        THE_NECROTIC_WAKE_DUNGEON = {
             name = "The Necrotic Wake",
             category = "dungeon",
             mapID = 1533, -- Bastion
@@ -7535,7 +7561,24 @@ ns.Edges = { -- Stormwind Internal Navigation
     requirements = {
         faction = "Horde"
     }
-}, -- Oribos
+}, {
+    from = "DALARAN_PALADIN_PORTAL_HORDE",
+    to = "SANCTUM_OF_LIGHT",
+    method = "portal",
+    requirements = {
+        class = "PALADIN",
+        faction = "Horde"
+    }
+}, {
+    from = "DALARAN_PALADIN_PORTAL_ALLIANCE",
+    to = "SANCTUM_OF_LIGHT",
+    method = "portal",
+    requirements = {
+        class = "PALADIN",
+        faction = "Alliance"
+    }
+},
+-- Oribos
 {
     from = "ORIBOS",
     to = "ORIBOS_FLIGHT",
@@ -7793,9 +7836,18 @@ ns.Edges = { -- Stormwind Internal Navigation
         faction = "Horde"
     }
 }, {
+    from = "ORGRIMMAR_PORTAL_ROOM",
+    to = "DAZARALOR_DOCK",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Horde"
+    }
+}, {
     from = "DAZARALOR_PORTAL_ROOM",
     to = "ORGRIMMAR_PORTAL_ROOM",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Horde"
     }

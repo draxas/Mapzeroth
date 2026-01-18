@@ -108,7 +108,7 @@ addon.TravelItems = {
         type = "toy",
         castTime = 3,
         cooldown = 900,
-        destination = "JADE_TEMPLE", -- Random
+        destination = "JADE_TEMPLE_GROUNDS_FLIGHT", -- Random
         isRandom = true
     },
 
@@ -631,7 +631,7 @@ addon.ClassTeleports = {
         class = "MAGE",
         castTime = 10,
         cooldown = 0,
-        destination = "STORMSHIELD",
+        destination = "STORMSHIELD_ASHRAN",
     },
 
     MAGE_TP_WARSPEAR = {
@@ -641,7 +641,7 @@ addon.ClassTeleports = {
         class = "MAGE",
         castTime = 10,
         cooldown = 0,
-        destination = "WARSPEAR",
+        destination = "WARSPEAR_ASHRAN",
     },
 
     MAGE_TP_HALL_OF_THE_GUARDIAN = {
@@ -681,7 +681,7 @@ addon.ClassTeleports = {
         class = "MAGE",
         castTime = 10,
         cooldown = 0,
-        destination = "DAZARALOR",
+        destination = "DAZARALOR_PORTAL_ROOM",
     },
 
     MAGE_TP_ORIBOS = {
@@ -711,7 +711,7 @@ addon.ClassTeleports = {
         class = "MAGE",
         castTime = 10,
         cooldown = 0,
-        destination = "DORNOGAL"
+        destination = "DORNOGAL_PORTAL_ROOM"
     },
 
     -- DRUID
@@ -752,7 +752,7 @@ addon.ClassTeleports = {
         class = "DEATHKNIGHT",
         castTime = 10,
         cooldown = 60,
-        destination = "ACHERUS" -- Need to add this node
+        destination = "ACHERUS"
     },
 
     -- MONK
@@ -862,7 +862,7 @@ addon.DungeonTeleports = {
         spellID = 373262,
         castTime = 10,
         cooldown = 28800,
-        destination = "KARAZHAN_DUNGEON"
+        destination = "KARAZHAN"
     },
 
     TELEPORT_TO_THE_ROOKERY = {
@@ -972,13 +972,13 @@ addon.DungeonTeleports = {
         destination = "PIT_OF_SARON_DUNGEON"
     },
 
-    TELEPORT_TO_DAWN_OF_THE_INFINITE = {
-        id = "TELEPORT_TO_DAWN_OF_THE_INFINITE",
+    TELEPORT_TO_DAWN_OF_THE_INFINITES = {
+        id = "TELEPORT_TO_DAWN_OF_THE_INFINITES",
         name = "Path of Twisted Time",
         spellID = 424197,
         castTime = 10,
         cooldown = 28800,
-        destination = "DAWN_OF_THE_INFINITE_DUNGEON"
+        destination = "DAWN_OF_THE_INFINITES_DUNGEON"
     },
 
     TELEPORT_TO_THE_NOKHUD_OFFENSIVE = {
@@ -1170,13 +1170,13 @@ addon.DungeonTeleports = {
         destination = "DE_OTHER_SIDE_DUNGEON"
     },
 
-    TELEPORT_TO_SCARLET_MONESTARY = {
-        id = "TELEPORT_TO_SCARLET_MONESTARY",
+    TELEPORT_TO_SCARLET_MONASTERY = {
+        id = "TELEPORT_TO_SCARLET_MONASTERY",
         name = "Path of the Scarlet Mitre",
         spellID = 131229,
         castTime = 10,
         cooldown = 28800,
-        destination = "SCARLET_MONESTARY_DUNGEON"
+        destination = "SCARLET_MONASTERY_DUNGEON"
     },
 
     TELEPORT_TO_SCARLET_HALLS = {
@@ -1437,7 +1437,7 @@ addon.DungeonTeleports = {
         spellID = 445418,
         castTime = 10,
         cooldown = 28800,
-        destination = "SIEGE_OF_BORALUS_DUNGEON",
+        destination = "SIEGE_OF_BORALUS_DUNGEON_ALLIANCE",
         faction = "ALLIANCE"
     },
 
@@ -1447,7 +1447,7 @@ addon.DungeonTeleports = {
         spellID = 464256,
         castTime = 10,
         cooldown = 28800,
-        destination = "SIEGE_OF_BORALUS_DUNGEON",
+        destination = "SIEGE_OF_BORALUS_DUNGEON_HORDE",
         faction = "HORDE"
     },
 
@@ -1457,7 +1457,7 @@ addon.DungeonTeleports = {
         spellID = 467553,
         castTime = 10,
         cooldown = 28800,
-        destination = "THE_MOTHERLODE_DUNGEON",
+        destination = "THE_MOTHERLODE_DUNGEON_ALLIANCE",
         faction = "ALLIANCE"
     },
 
@@ -1467,7 +1467,7 @@ addon.DungeonTeleports = {
         spellID = 467555,
         castTime = 10,
         cooldown = 28800,
-        destination = "THE_MOTHERLODE_DUNGEON",
+        destination = "THE_MOTHERLODE_DUNGEON_HORDE",
         faction = "HORDE"
     },
 
@@ -1516,13 +1516,13 @@ addon.DungeonTeleports = {
         destination = "MAGISTERS_TERRACE_DUNGEON"
     },
 
-    TELEPORT_TO_SEAT_OF_THE_TRIUMVERATE = {
-        id = "TELEPORT_TO_SEAT_OF_THE_TRIUMVERATE",
+    TELEPORT_TO_SEAT_OF_THE_TRIUMVIRATE = {
+        id = "TELEPORT_TO_SEAT_OF_THE_TRIUMVIRATE",
         name = "Path of Dark Dereliction",
         spellID = 1254551,
         castTime = 10,
         cooldown = 28800,
-        destination = "SEAT_OF_THE_TRIUMVERATE_DUNGEON"
+        destination = "SEAT_OF_THE_TRIUMVIRATE_DUNGEON"
     },
 
     TELEPORT_TO_THE_AZURE_VAULT = {

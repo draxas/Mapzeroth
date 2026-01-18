@@ -69,6 +69,12 @@ local requirementCheckers = {
         return UnitLevel("player") <= level
     end,
     
+    -- Class requirement
+    class = function(requiredClass)
+        local _, classToken = UnitClass("player")
+        return classToken == requiredClass
+    end,
+
     -- Faction requirement
     faction = function(requiredFaction)
         local playerFaction = UnitFactionGroup("player")
@@ -96,17 +102,6 @@ local requirementCheckers = {
             end
         end
         return false
-    end,
-    
-    -- Multiple requirements (ALL)
-    allOf = function(subRequirements)
-        for requirementType, value in pairs(subRequirements) do
-            local checker = requirementCheckers[requirementType]
-            if not checker or not checker(value) then
-                return false
-            end
-        end
-        return true
     end,
 }
 
@@ -161,6 +156,8 @@ function addon:ExplainEdgeRequirements(edge)
             passed = UnitLevel("player") >= value
         elseif requirementType == "maxLevel" then
             passed = UnitLevel("player") <= value
+        elseif requirementType == "class" then
+            passed = UnitClass("player") == value
         elseif requirementType == "faction" then
             passed = UnitFactionGroup("player") == value
         elseif requirementType == "reputation" then

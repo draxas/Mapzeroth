@@ -137,6 +137,24 @@ SlashCmdList["MAPZEROTH"] = function(msg)
         return
     end
 
+    if command == "verify_nodes" or command == "verify" then
+        local results = addon:VerifyNodeReferences()
+
+        print(string.format("[Mapzeroth] Verified %d base edges and %d abilities", results.edgeCount,
+            results.abilityCount))
+
+        if results.valid then
+            print("[Mapzeroth] All node references are valid!")
+        else
+            print(string.format("[Mapzeroth] Found %d invalid node references:", results.errorCount))
+
+            for _, entry in ipairs(results.missingNodes) do
+                print(string.format("  - %s (referenced %d times in %s)", entry.id, entry.count, entry.type))
+            end
+        end
+        return
+    end
+
     print("[Mapzeroth] Unknown command. Type /mapzeroth help for usage.")
 end
 
@@ -242,7 +260,7 @@ local function FormatPathFromSteps(steps, totalCost)
 
     for i, step in ipairs(steps) do
         local actionText
-        
+
         if step.abilityName then
             -- Ability-based travel (portals, hearthstone, etc.)
             if step.destinationName then
@@ -255,12 +273,12 @@ local function FormatPathFromSteps(steps, totalCost)
             local methodText = addon.METHOD_DISPLAY_TEXT[step.method] or "Travel to"
             actionText = string.format("%s %s", methodText, step.destination)
         end
-        
+
         -- Add collapse indicator only in debug mode
         if addon.DEBUG and step.collapsedFrom and step.collapsedFrom > 1 then
             actionText = actionText .. string.format(" (direct, collapsed %d hops)", step.collapsedFrom)
         end
-        
+
         table.insert(output, string.format("  %d. %s (%.0fs)", i, actionText, step.time))
     end
 
@@ -285,14 +303,14 @@ function addon:FindRoute(destinationID)
     end
 
     local playerAbilities = addon:GetAvailableTravelAbilities()
-    local location = addon:GetPlayerLocation()  -- Can be nil in instances - that's fine!
+    local location = addon:GetPlayerLocation() -- Can be nil in instances - that's fine!
 
     -- Build ALL synthetic edges (abilities + walking, if location exists)
     local synthetic = addon:BuildSyntheticEdges(location, playerAbilities, waypoint)
 
     -- Find path
     local path, cost, previous = addon:FindPath("_PLAYER_POSITION", destinationID, playerAbilities, synthetic)
-    
+
     if addon.DEBUG then
         print("[Mapzeroth] Path nodes:")
         for i, nodeID in ipairs(path) do
@@ -408,4 +426,125 @@ function addon:ShowMapInfo()
     print(string.format("    x = %.3f,", x))
     print(string.format("    y = %.3f,", y))
     print(string.format("},"))
+end
+
+-----------------------------------------------------------
+-- COMMAND: VERIFY NODE REFERENCES
+-----------------------------------------------------------
+-- Returns: { valid = boolean, edgeCount = number, abilityCount = number, 
+--            errorCount = number, missingNodes = table }
+
+function addon:VerifyNodeReferences()
+    local missingNodes = {}
+    local edgeCount = 0
+    local errorCount = 0
+    
+    -- Check base graph edges
+    if self.Edges then
+        for _, edge in ipairs(self.Edges) do
+            edgeCount = edgeCount + 1
+            
+            -- Check 'from' node
+            if not self:GetTravelNode(edge.from) then
+                local key = edge.from
+                if not missingNodes[key] then
+                    missingNodes[key] = {count = 0, type = "edge"}
+                end
+                missingNodes[key].count = missingNodes[key].count + 1
+                errorCount = errorCount + 1
+            end
+            
+            -- Check 'to' node
+            if not self:GetTravelNode(edge.to) then
+                local key = edge.to
+                if not missingNodes[key] then
+                    missingNodes[key] = {count = 0, type = "edge"}
+                end
+                missingNodes[key].count = missingNodes[key].count + 1
+                errorCount = errorCount + 1
+            end
+        end
+    end
+    
+    -- Helper to check destinations
+    local function checkDestination(dest, sourceType)
+        if dest and not self:GetTravelNode(dest) then
+            if not missingNodes[dest] then
+                missingNodes[dest] = {count = 0, type = sourceType}
+            end
+            missingNodes[dest].count = missingNodes[dest].count + 1
+            errorCount = errorCount + 1
+        end
+    end
+    
+    local abilityCount = 0
+    
+    -- Check ALL player abilities (not just available ones)
+    
+    -- TravelItems (toys, hearthstones)
+    if self.TravelItems then
+        for _, item in pairs(self.TravelItems) do
+            abilityCount = abilityCount + 1
+            checkDestination(item.destination, "ability")
+            if item.destinations then
+                for _, dest in ipairs(item.destinations) do
+                    checkDestination(dest, "ability")
+                end
+            end
+        end
+    end
+    
+    -- ClassTeleports
+    if self.ClassTeleports then
+        for _, spell in pairs(self.ClassTeleports) do
+            abilityCount = abilityCount + 1
+            checkDestination(spell.destination, "ability")
+            if spell.destinations then
+                for _, dest in ipairs(spell.destinations) do
+                    checkDestination(dest, "ability")
+                end
+            end
+        end
+    end
+    
+    -- RacialAbilities
+    if self.RacialAbilities then
+        for _, racial in pairs(self.RacialAbilities) do
+            abilityCount = abilityCount + 1
+            checkDestination(racial.destination, "ability")
+            if racial.destinations then
+                for _, dest in ipairs(racial.destinations) do
+                    checkDestination(dest, "ability")
+                end
+            end
+        end
+    end
+    
+    -- DungeonTeleports
+    if self.DungeonTeleports then
+        for _, teleport in pairs(self.DungeonTeleports) do
+            abilityCount = abilityCount + 1
+            checkDestination(teleport.destination, "ability")
+            if teleport.destinations then
+                for _, dest in ipairs(teleport.destinations) do
+                    checkDestination(dest, "ability")
+                end
+            end
+        end
+    end
+    
+    -- Sort by count (most referenced first)
+    local sortedMissing = {}
+    for nodeID, data in pairs(missingNodes) do
+        table.insert(sortedMissing, {id = nodeID, count = data.count, type = data.type})
+    end
+    table.sort(sortedMissing, function(a, b) return a.count > b.count end)
+    
+    return {
+        valid = (errorCount == 0),
+        edgeCount = edgeCount,
+        abilityCount = abilityCount,
+        errorCount = errorCount,
+        missingNodes = sortedMissing
+    }
 end
