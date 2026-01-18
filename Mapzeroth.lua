@@ -17,6 +17,20 @@ frame:SetScript("OnEvent", function(self, event)
     if event == "PLAYER_LOGIN" then
         print("[Mapzeroth] Loaded successfully! Type /mapzeroth help for commands.")
 
+        -- Set defaults for any missing settings values
+        if MapzerothDB.settings.loadingScreenTax == nil then
+            MapzerothDB.settings.loadingScreenTax = 15
+        end
+        if MapzerothDB.settings.maxCooldownValue == nil then
+            MapzerothDB.settings.maxCooldownValue = 8
+        end
+        if MapzerothDB.settings.windowScale == nil then
+            MapzerothDB.settings.windowScale = 1.0
+        end
+        if MapzerothDB.minimap.hide == nil then
+            MapzerothDB.minimap.hide = false
+        end
+
         -- Initialize minimap button
         addon:InitializeMinimapButton()
         -- Initialize settings panel
