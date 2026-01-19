@@ -609,7 +609,7 @@ function addon:BuildSyntheticEdges(playerLocation, playerAbilities, optionalWayp
 
         for traversalGroup, groupData in pairs(self.TravelGraph.nodes) do
             for nodeID, node in pairs(groupData) do
-                if node.mapID == playerLocation.mapID and node.x and node.y then
+                if node.mapID == playerLocation.mapID and node.x and node.y and not node.interior then
                     local dx = node.x - playerLocation.x
                     local dy = node.y - playerLocation.y
                     local dist = math.sqrt(dx * dx + dy * dy)

@@ -96,8 +96,12 @@ local function calculateTravelTime(node1, node2, method)
     local distance = math.sqrt(dx * dx + dy * dy)
 
     local speed = (method == "fly") and FLY_SPEED or WALK_SPEED
-    local time = math.ceil(distance / speed / 5) * 5
-    return math.max(10, math.min(300, time))
+    local time = distance / speed
+    local roundedTime = math.ceil(time / 2) * 2
+    local clampedTime = math.max(2, math.min(300, roundedTime))
+    
+
+    return clampedTime
 end
 
 local function edgeExists(node, targetID)
@@ -165,6 +169,7 @@ local function buildGraph(hierarchicalNodes, edgeList)
                 category = nodeData.category,
                 traversalGroup = traversalGroup,
                 faction = nodeData.faction,
+                interior = nodeData.interior,
                 mapID = nodeData.mapID,
                 x = nodeData.x,
                 y = nodeData.y,
@@ -224,9 +229,9 @@ local function injectAutoTraversalEdges(graph)
     for traversalGroup, groupData in pairs(graph.nodes) do
         local nodesInGroup = {}
 
-        -- Collect all nodes with valid coords in this traversal group
+        -- Collect all non-interior nodes with valid coords in this traversal group
         for nodeID, node in pairs(groupData) do
-            if node.x and node.y then
+            if node.x and node.y and not node.interior then
                 table.insert(nodesInGroup, node)
             end
         end

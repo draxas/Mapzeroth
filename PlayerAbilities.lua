@@ -241,7 +241,7 @@ addon.TravelItems = {
         type = "inventory_item",
         castTime = 10,
         cooldown = 7200,
-        destination = "STORMWIND_PORTAL_ROOM",
+        destination = "STORMWIND_PORTAL_ROOM_LOWER",
     },
 
     WRAP_OF_UNITY_ALLIANCE = {
@@ -251,7 +251,7 @@ addon.TravelItems = {
         type = "inventory_item",
         castTime = 10,
         cooldown = 14400,
-        destination = "STORMWIND_PORTAL_ROOM",
+        destination = "STORMWIND_PORTAL_ROOM_LOWER",
     },
 
     SHROUD_OF_COOPERATION_ALLIANCE = {
@@ -261,7 +261,7 @@ addon.TravelItems = {
         type = "inventory_item",
         castTime = 10,
         cooldown = 28800,
-        destination = "STORMWIND_PORTAL_ROOM",
+        destination = "STORMWIND_PORTAL_ROOM_LOWER",
     },
 
     -- Guild Cloaks (Horde)
@@ -272,7 +272,7 @@ addon.TravelItems = {
         type = "inventory_item",
         castTime = 10,
         cooldown = 7200,
-        destination = "ORGRIMMAR_PORTAL_ROOM",
+        destination = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     },
 
     WRAP_OF_UNITY_HORDE = {
@@ -282,7 +282,7 @@ addon.TravelItems = {
         type = "inventory_item",
         castTime = 10,
         cooldown = 14400,
-        destination = "ORGRIMMAR_PORTAL_ROOM",
+        destination = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     },
 
     SHROUD_OF_COOPERATION_HORDE = {
@@ -292,7 +292,7 @@ addon.TravelItems = {
         type = "inventory_item",
         castTime = 10,
         cooldown = 28800,
-        destination = "ORGRIMMAR_PORTAL_ROOM",
+        destination = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     },
 
     TIME_LOST_ARTIFACT = {
@@ -451,7 +451,7 @@ addon.ClassTeleports = {
         class = "MAGE",
         castTime = 10,
         cooldown = 0,
-        destination = "STORMWIND_PORTAL_ROOM",
+        destination = "STORMWIND_PORTAL_ROOM_LOWER",
     },
 
     MAGE_TP_ORGRIMMAR = {
@@ -461,7 +461,7 @@ addon.ClassTeleports = {
         class = "MAGE",
         castTime = 10,
         cooldown = 0,
-        destination = "ORGRIMMAR_PORTAL_ROOM",
+        destination = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     },
 
     MAGE_TP_IRONFORGE = {

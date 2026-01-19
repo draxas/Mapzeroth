@@ -11,12 +11,141 @@ local _, ns = ...
 ns.Nodes = {
     EK_OVERWORLD = {
         -- Stormwind Portal Hub
-        STORMWIND_PORTAL_ROOM = {
+        STORMWIND_PORTAL_ROOM_LOWER = {
+            name = "Portal Room (Lower)",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4634,
+            y = 0.9024
+        },
+        STORMWIND_PORTAL_ROOM_UPPER = {
+            name = "Portal Room (Upper)",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4275,
+            y = 0.9438
+        },
+        STORMWIND_DARK_PORTAL_BL_NPC = {
+            name = "Honor Hold Mage",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4911,
+            y = 0.8734
+        },
+        STORMWIND_DORNOGAL_PORTAL = {
+            name = "Portal to Dornogal",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4797,
+            y = 0.9211
+        },
+        STORMWIND_VALDRAKKEN_PORTAL = {
+            name = "Portal to Valdrakken",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4874,
+            y = 0.9356
+        },
+        STORMWIND_BORALUS_PORTAL = {
+            name = "Portal to Boralus",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4864,
+            y = 0.9497
+        },
+        STORMWIND_ORIBOS_PORTAL = {
+            name = "Portal to Oribos",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4772,
+            y = 0.9478
+        },
+        STORMWIND_FOUNDERS_POINT_PORTAL = {
+            name = "Portal to Founder's Point",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4701,
+            y = 0.9326
+        },
+        STORMWIND_PAWDON_VILLAGE_PORTAL = {
+            name = "Portal to Paw'don Village",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4559,
+            y = 0.8730
+        },
+        STORMWIND_SHATTRATH_OUTLANDS_PORTAL = {
+            name = "Portal to Shattrath",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4480,
+            y = 0.8584
+        },
+        STORMWIND_CAVERNS_OF_TIME_PORTAL = {
+            name = "Portal to Caverns of Time",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4379,
+            y = 0.8550
+        },
+        STORMWIND_EXODAR_PORTAL = {
+            name = "Portal to The Exodar",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4372,
+            y = 0.8709
+        },
+        STORMWIND_DALARAN_NORTHREND_PORTAL = {
+            name = "Portal to Northrend Dalaran",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4442,
+            y = 0.8861
+        },
+        STORMWIND_BELAMETH_PORTAL = {
+            name = "Portal to Bel'ameth",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4336,
+            y = 0.9753
+        },
+        STORMWIND_AZSUNA_PORTAL = {
+            name = "Portal to Bel'ameth",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4197,
+            y = 0.9150
+        },
+        STORMWIND_STORMSHIELD_PORTAL = {
+            name = "Portal to Stormshield",
+            faction = "ALLIANCE",
+            mapID = 84,
+            interior = true,
+            x = 0.4126,
+            y = 0.8995
+        },
+        -- Stormwind City Locations
+        STORMWIND_MAGE_TOWER_ENTRANCE = {
             name = "Mage Tower",
             faction = "ALLIANCE",
             mapID = 84,
-            x = 0.480,
-            y = 0.844
+            x = 0.4951,
+            y = 0.8666
         },
         EASTERN_EARTHSHRINE_SW = {
             name = "Eastern Earthshrine",
@@ -25,7 +154,6 @@ ns.Nodes = {
             x = 0.724,
             y = 0.164
         },
-        -- Stormwind City Locations
         SW_EMBASSY = {
             name = "Embassy",
             faction = "ALLIANCE",
@@ -1191,7 +1319,7 @@ ns.Nodes = {
             y = 0.5590
         },
         -- Horde Cities & Zones
-        ORGRIMMAR_PORTAL_ROOM = {
+        ORGRIMMAR_PORTAL_ROOM_UPPER = {
             name = "Portal Room",
             faction = "HORDE",
             mapID = 85,
@@ -1321,6 +1449,19 @@ ns.Nodes = {
             mapID = 74,
             x = 0.546,
             y = 0.283
+        },
+        CAVERNS_OF_TIME_STORMWIND_PORTAL = {
+            name = "Portal to Stormwind",
+            mapID = 74,
+            faction = "ALLIANCE",
+            x = 0.5883,
+            y = 0.2689
+        },
+        CAVERNS_OF_TIME_ORGRIMMAR_PORTAL = {
+            name = "Portal to Orgrimmar",
+            mapID = 74,
+            x = 0.5818,
+            y = 0.2680
         },
         ULDUM = {
             name = "Ramkahen",
@@ -2578,8 +2719,22 @@ ns.Nodes = {
         DALARAN_NORTHREND = {
             name = "Dalaran (Northrend)",
             mapID = 125,
-            x = 0.559,
-            y = 0.468
+            x = 0.5592,
+            y = 0.4678
+        },
+        DALARAN_NORTHREND_STORMWIND_PORTAL = {
+            name = "Portal to Stormwind",
+            mapID = 125,
+            faction = "ALLIANCE",
+            x = 0.3998,
+            y = 0.6265
+        },
+        DALARAN_NORTHREND_ORGRIMMAR_PORTAL = {
+            name = "Portal to Orgrimmar",
+            mapID = 125,
+            faction = "HORDE",
+            x = 0.5757,
+            y = 0.1942
         },
         ARGENT_TOURNAMENT_GROUNDS = {
             name = "Argent Tournament Grounds",
@@ -7302,19 +7457,19 @@ ns.Nodes = {
 
 ns.Edges = { -- Stormwind Internal Navigation
 {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_MAGE_TOWER_ENTRANCE",
     to = "EASTERN_EARTHSHRINE_SW",
     method = "fly"
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_MAGE_TOWER_ENTRANCE",
     to = "STORMWIND_HARBOR",
     method = "fly"
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_MAGE_TOWER_ENTRANCE",
     to = "SW_EMBASSY",
     method = "fly"
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_MAGE_TOWER_ENTRANCE",
     to = "SW_TRAM",
     method = "fly"
 }, {
@@ -7325,80 +7480,122 @@ ns.Edges = { -- Stormwind Internal Navigation
     from = "IF_TRAM",
     to = "IRONFORGE",
     method = "fly"
-}, -- Stormwind Mage Tower → Major Hubs
+}, -- Stormwind Mage Tower Interior
 {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_BORALUS_PORTAL",
     to = "BORALUS",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_DORNOGAL_PORTAL",
+    to = "DORNOGAL_PORTAL_ROOM",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance",
+        minLevel = 68
+    }
+}, {
+    from = "STORMWIND_DALARAN_NORTHREND_PORTAL",
     to = "DALARAN_NORTHREND",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "DALARAN_NORTHREND_STORMWIND_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+},{
+    from = "STORMWIND_ORIBOS_PORTAL",
     to = "ORIBOS",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_STORMSHIELD_PORTAL",
     to = "STORMSHIELD_ASHRAN",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_SHATTRATH_OUTLANDS_PORTAL",
     to = "SHATTRATH_OUTLAND",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_VALDRAKKEN_PORTAL",
     to = "VALDRAKKEN",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
-}, -- Stormwind Mage Tower → Zones
+},
 {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_EXODAR_PORTAL",
     to = "EXODAR",
     method = "portal",
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_AZSUNA_PORTAL",
     to = "AZSUNA",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "AZSUNA",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_PAWDON_VILLAGE_PORTAL",
     to = "PAWDON_VILLAGE_PORTAL",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "PAWDON_VILLAGE_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_CAVERNS_OF_TIME_PORTAL",
     to = "CAVERNS_OF_TIME",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_DARK_PORTAL_BL_NPC",
     to = "DARK_PORTAL_BL",
     method = "portal",
     oneway = true,
@@ -7406,20 +7603,152 @@ ns.Edges = { -- Stormwind Internal Navigation
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_EXODAR_PORTAL",
+    to = "EXODAR",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+},{
+    from = "STORMWIND_BELAMETH_PORTAL",
     to = "BELAMETH",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
-    from = "STORMWIND_PORTAL_ROOM",
+    from = "STORMWIND_FOUNDERS_POINT_PORTAL",
     to = "FOUNDERS_POINT",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
-}, -- Stormwind Eastern Earthshrine → Cataclysm Zones
+}, {
+    from = "FOUNDERS_POINT",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_MAGE_TOWER_ENTRANCE",
+    to = "STORMWIND_DARK_PORTAL_BL_NPC",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_DARK_PORTAL_BL_NPC",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_DORNOGAL_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_VALDRAKKEN_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_BORALUS_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_ORIBOS_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_FOUNDERS_POINT_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_PAWDON_VILLAGE_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_SHATTRATH_OUTLANDS_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_CAVERNS_OF_TIME_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_EXODAR_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_DALARAN_NORTHREND_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_PORTAL_ROOM_LOWER",
+    to = "STORMWIND_PORTAL_ROOM_UPPER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_BELAMETH_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_UPPER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_AZSUNA_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_UPPER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "STORMWIND_STORMSHIELD_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_UPPER",
+    method = "walk",
+    requirements = {
+        faction = "Alliance"
+    }
+},
+
+-- Stormwind Eastern Earthshrine → Cataclysm Zones
 {
     from = "EASTERN_EARTHSHRINE_SW",
     to = "DARKBREAK_COVE_PORTAL",
@@ -7504,12 +7833,21 @@ ns.Edges = { -- Stormwind Internal Navigation
 }, -- Exodar
 {
     from = "EXODAR",
-    to = "STORMWIND_PORTAL_ROOM",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
     method = "portal",
+    oneway = true,
     requirements = {
         faction = "Alliance"
     }
 }, {
+    from = "BORALUS",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+},{
     from = "BORALUS",
     to = "SILITHUS",
     method = "portal",
@@ -7547,7 +7885,7 @@ ns.Edges = { -- Stormwind Internal Navigation
     method = "portal"
 }, {
     from = "DALARAN_BROKEN_ISLES_PORTAL_ALLIANCE",
-    to = "STORMWIND_PORTAL_ROOM",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
     method = "portal",
     oneway = true,
     requirements = {
@@ -7555,7 +7893,7 @@ ns.Edges = { -- Stormwind Internal Navigation
     }
 }, {
     from = "DALARAN_BROKEN_ISLES_PORTAL_HORDE",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     oneway = true,
     requirements = {
@@ -7583,6 +7921,14 @@ ns.Edges = { -- Stormwind Internal Navigation
     from = "ORIBOS",
     to = "ORIBOS_FLIGHT",
     method = "walk"
+}, {
+    from = "ORIBOS",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
 }, {
     from = "ORIBOS_FLIGHT",
     to = "THEATER_OF_PAIN_FLIGHT",
@@ -7620,17 +7966,33 @@ ns.Edges = { -- Stormwind Internal Navigation
         faction = "Alliance"
     }
 }, {
+    from = "STORMSHIELD_ASHRAN",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
     from = "SHATTRATH_OUTLAND",
     to = "QUELDANAS",
     method = "portal",
     oneway = true
+}, {
+    from = "SHATTRATH_OUTLAND",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
 }, {
     from = "DARK_PORTAL_BL",
     to = "DARK_PORTAL_OUTLAND",
     method = "portal"
 }, {
     from = "DARK_PORTAL_OUTLAND",
-    to = "STORMWIND_PORTAL_ROOM",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
     method = "portal",
     oneway = true,
     requirements = {
@@ -7658,12 +8020,28 @@ ns.Edges = { -- Stormwind Internal Navigation
     method = "portal",
     oneway = true
 }, {
+    from = "VALDRAKKEN",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
     from = "VALDRAKKEN_BADLANDS_PORTAL",
     to = "FUSELIGHT_FLIGHT",
     method = "portal",
     oneway = true
 }, -- Night Elf Network
 {
+    from = "BELAMETH",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+},{
     from = "BELAMETH",
     to = "MOUNT_HYJAL",
     method = "portal"
@@ -7698,14 +8076,6 @@ ns.Edges = { -- Stormwind Internal Navigation
         faction = "Alliance"
     }
 }, {
-    from = "DORNOGAL_PORTAL_ROOM",
-    to = "STORMWIND_PORTAL_ROOM",
-    method = "portal",
-    requirements = {
-        faction = "Alliance",
-        minLevel = 68
-    }
-}, {
     from = "TUSHUI_LANDING_FLIGHT",
     to = "PEARLFIN_VILLAGE_FLIGHT",
     method = "flight",
@@ -7726,6 +8096,15 @@ ns.Edges = { -- Stormwind Internal Navigation
     to = "LIGHTS_HOPE_CHAPEL",
     method = "flight",
     cost = 180
+}, {
+    from = "DORNOGAL_PORTAL_ROOM",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
+    method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance",
+        minLevel = 68
+    }
 }, {
     from = "DORNOGAL_UNDERMINE_PORTAL",
     to = "UNDERMINE",
@@ -7786,22 +8165,31 @@ ns.Edges = { -- Stormwind Internal Navigation
     method = "zeppelin",
     cost = 275
 }, {
-    from = "DALARAN_NORTHREND",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    from = "DALARAN_NORTHREND_ORGRIMMAR_PORTAL",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Horde"
+    }
+}, {
+    from = "ORGRIMMAR_NORTHREND_DALARAN_PORTAL",
+    to = "DALARAN_NORTHREND",
+    method = "portal",
+    oneway = true,
     requirements = {
         faction = "Horde"
     }
 }, {
     from = "HONEYDEW_VILLAGE",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     requirements = {
         faction = "Horde"
     }
 }, {
     from = "DORNOGAL_PORTAL_ROOM",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     requirements = {
         faction = "Horde",
@@ -7809,34 +8197,43 @@ ns.Edges = { -- Stormwind Internal Navigation
     }
 }, {
     from = "RAZORWIND_SHORES",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     requirements = {
         faction = "Horde"
     }
 }, {
     from = "ORIBOS",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     requirements = {
         faction = "Horde"
     }
 }, {
     from = "VALDRAKKEN",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     requirements = {
         faction = "Horde"
     }
 }, {
-    from = "CAVERNS_OF_TIME",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    from = "CAVERNS_OF_TIME_STORMWIND_PORTAL",
+    to = "STORMWIND_PORTAL_ROOM_LOWER",
     method = "portal",
+    oneway = true,
+    requirements = {
+        faction = "Alliance"
+    }
+}, {
+    from = "CAVERNS_OF_TIME_ORGRIMMAR_PORTAL",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
+    method = "portal",
+    oneway = true,
     requirements = {
         faction = "Horde"
     }
 }, {
-    from = "ORGRIMMAR_PORTAL_ROOM",
+    from = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     to = "DAZARALOR_DOCK",
     method = "portal",
     oneway = true,
@@ -7845,14 +8242,14 @@ ns.Edges = { -- Stormwind Internal Navigation
     }
 }, {
     from = "DAZARALOR_PORTAL_ROOM",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     oneway = true,
     requirements = {
         faction = "Horde"
     }
 }, {
-    from = "ORGRIMMAR_PORTAL_ROOM",
+    from = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     to = "DARK_PORTAL_BL",
     method = "portal",
     oneway = true,
@@ -7891,28 +8288,28 @@ ns.Edges = { -- Stormwind Internal Navigation
     }
 }, {
     from = "AZSUNA",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     requirements = {
         faction = "Horde"
     }
 }, {
     from = "WARSPEAR_ASHRAN",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     requirements = {
         faction = "Horde"
     }
 }, {
     from = "SHATTRATH_OUTLAND",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     requirements = {
         faction = "Horde"
     }
 }, {
     from = "SILVERMOON",
-    to = "ORGRIMMAR_PORTAL_ROOM",
+    to = "ORGRIMMAR_PORTAL_ROOM_UPPER",
     method = "portal",
     requirements = {
         faction = "Horde"
