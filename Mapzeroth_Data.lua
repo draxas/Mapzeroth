@@ -9322,35 +9322,59 @@ ns.Edges = { -- Stormwind Internal Navigation
 }, {
     from = "EMERALD_DREAMWAY_MOONGLADE_PORTAL",
     to = "MOONGLADE_DRUID",
-    method = "portal"
+    method = "portal",
+    requirements = {
+        class = "DRUID"
+    }
 }, {
     from = "EMERALD_DREAMWAY_AMIRDRASSIL_PORTAL",
     to = "AMIRDRASSIL_DRUID",
-    method = "portal"
+    method = "portal",
+    requirements = {
+        class = "DRUID"
+    }
 }, {
     from = "EMERALD_DREAMWAY_FERALAS_PORTAL",
     to = "FERALAS_DRUID",
-    method = "portal"
+    method = "portal",
+    requirements = {
+        class = "DRUID"
+    }
 }, {
     from = "EMERALD_DREAMWAY_GRIZZLY_HILLS_PORTAL",
     to = "GRIZZLY_HILLS_DRUID",
-    method = "portal"
+    method = "portal",
+    requirements = {
+        class = "DRUID"
+    }
 }, {
     from = "EMERALD_DREAMWAY_DREAMGROVE_PORTAL",
     to = "VALSHARAH_DRUID",
-    method = "portal"
+    method = "portal",
+    requirements = {
+        class = "DRUID"
+    }
 }, {
     from = "EMERALD_DREAMWAY_HYJAL_PORTAL",
     to = "MOUNT_HYJAL_DRUID",
-    method = "portal"
+    method = "portal",
+    requirements = {
+        class = "DRUID"
+    }
 }, {
     from = "EMERALD_DREAMWAY_HINTERLANDS_PORTAL",
     to = "HINTERLANDS_DRUID",
-    method = "portal"
+    method = "portal",
+    requirements = {
+        class = "DRUID"
+    }
 }, {
     from = "EMERALD_DREAMWAY_DUSKWOOD_PORTAL",
     to = "DUSKWOOD_DRUID",
-    method = "portal"
+    method = "portal",
+    requirements = {
+        class = "DRUID"
+    }
 }}
 
 -----------------------------------------------------------

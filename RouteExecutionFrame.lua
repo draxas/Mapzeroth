@@ -362,6 +362,8 @@ end
 function addon:ShowRouteExecutionFrame(steps, totalTime)
     local frame = CreateExecutionFrame()
 
+    frame:ClearAllPoints()
+    
     -- Hide existing buttons
     for _, btn in ipairs(stepButtons) do
         btn:Hide()
