@@ -672,8 +672,14 @@ function addon:InitializeGPSNavigator()
     frame:SetClampedToScreen(true)
     frame:SetMovable(true)
     frame:EnableMouse(true)
+    if frame.SetPropagateMouseClicks then
+        frame:SetPropagateMouseClicks(true)
+    end
+    if frame.SetPropagateMouseMotion then
+        frame:SetPropagateMouseMotion(true)
+    end
     frame:SetScript("OnMouseUp", function(self, button)
-        if button == "RightButton" then
+        if button == "RightButton" and not (IsMouselooking and IsMouselooking()) then
             ShowGPSContextMenu(self)
         end
     end)
