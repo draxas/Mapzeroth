@@ -480,6 +480,49 @@ local function UpdateGPS()
     gpsFrame.arrow:SetRotation(heading - facing)
 end
 
+local function ShowGPSContextMenu(owner)
+    if not gpsFrame then
+        return
+    end
+
+    local steps, currentStep = addon:GetRouteNavigationState()
+    local totalSteps = steps and #steps or 0
+    local hasPrevious = currentStep and currentStep > 1
+    local hasNext = currentStep and currentStep < totalSteps
+
+    if MenuUtil and MenuUtil.CreateContextMenu then
+        MenuUtil.CreateContextMenu(owner or gpsFrame, function(_, rootDescription)
+            local previousButton = rootDescription:CreateButton("Previous step", function()
+                if hasPrevious then
+                    addon:SetActiveRouteStep(currentStep - 1)
+                    UpdateGPS()
+                end
+            end)
+            if previousButton and previousButton.SetEnabled then
+                previousButton:SetEnabled(hasPrevious)
+            end
+
+            local nextButton = rootDescription:CreateButton("Next step", function()
+                if hasNext then
+                    addon:SetActiveRouteStep(currentStep + 1)
+                    UpdateGPS()
+                end
+            end)
+            if nextButton and nextButton.SetEnabled then
+                nextButton:SetEnabled(hasNext)
+            end
+
+            rootDescription:CreateDivider()
+            rootDescription:CreateButton("Close", function()
+                gpsFrame:Hide()
+            end)
+        end)
+        return
+    end
+
+    GPSDebugPrint("Blizzard_Menu unavailable: context menu not shown")
+end
+
 local function SaveGPSPosition(frame)
     MapzerothDB.settings.gpsFramePoint = {
         point = frame.point or "CENTER",
@@ -628,7 +671,12 @@ function addon:InitializeGPSNavigator()
     frame:SetFrameLevel(1)
     frame:SetClampedToScreen(true)
     frame:SetMovable(true)
-    frame:EnableMouse(false)
+    frame:EnableMouse(true)
+    frame:SetScript("OnMouseUp", function(self, button)
+        if button == "RightButton" then
+            ShowGPSContextMenu(self)
+        end
+    end)
 
     local arrow = frame:CreateTexture(nil, "ARTWORK")
     arrow:SetTexture("Interface\\MINIMAP\\ROTATING-MINIMAPARROW")
@@ -645,6 +693,11 @@ function addon:InitializeGPSNavigator()
     end)
     arrowDragButton:SetScript("OnDragStop", function()
         StopMovingAndPersist(frame)
+    end)
+    arrowDragButton:SetScript("OnMouseUp", function(self, button)
+        if button == "RightButton" then
+            ShowGPSContextMenu(self)
+        end
     end)
 
     local actionButton = CreateFrame("Button", nil, frame, "SecureActionButtonTemplate,BackdropTemplate")
@@ -749,7 +802,15 @@ function addon:InitializeGPSNavigator()
         UpdateActionButtonVisual(self)
     end)
 
-    actionButton:SetScript("OnMouseUp", function(self)
+    actionButton:SetScript("OnMouseUp", function(self, mouseButton)
+        if mouseButton == "RightButton" then
+            self.isPressed = false
+            self.isHovered = self:IsMouseOver()
+            UpdateActionButtonVisual(self)
+            ShowGPSContextMenu(self)
+            return
+        end
+
         self.isPressed = false
         self.isHovered = self:IsMouseOver()
         UpdateActionButtonVisual(self)
